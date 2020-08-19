@@ -1,1 +1,1 @@
-This folder is a placeholder for the code that gets written by Hadley and Charlotte during the workshop.
+This folder is a placeholder for the code that gets written by Charlotte and Sara during the workshop.
