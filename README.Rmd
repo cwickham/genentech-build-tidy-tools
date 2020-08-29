@@ -74,7 +74,7 @@ If you're all set, you might like to download the first set of slides.
 
 ## Schedule
 
-```{r, results='asis', echo = FALSE}
+```{r echo = FALSE}
 library(tidyverse)
 day_fmt <- lubridate::stamp("Mon Sep 14th", order = "amd")
 schedule <- tribble(
@@ -109,7 +109,8 @@ schedule %>%
   gt::gt() %>% 
   gt::cols_label(`1` = "8:30am-10:00am", `2` = "10:30am-12:00pm",
     date = "Day") %>% 
-  gt::fmt_markdown(columns = TRUE, rows = TRUE)
+  gt::fmt_markdown(columns = TRUE, rows = TRUE) %>%  
+  gt::as_raw_html()
 ```
 
 The notes will be live coded and committed as we go, 
