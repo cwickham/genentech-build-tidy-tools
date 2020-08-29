@@ -7,6 +7,14 @@
 
 by Charlotte Wickham and Sara Altman
 
+## Materials
+
+Materials will be made available on
+[github](https://github.com/cwickham/genentech-build-tidy-tools). The
+materials will evolve as the workshop approaches, so if you want to
+pre-download the materials, please wait until the day before the
+workshop.
+
 ## Setup
 
 <!-- Fix later to generate from content of repo like https://github.com/hadley/tidy-tools/blob/master/README.Rmd -->
@@ -46,7 +54,7 @@ If you’re all set, you might like to download the first set of slides.
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#fuecorjkds .gt_table {
+#nbpfdvtvih .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -69,7 +77,7 @@ If you’re all set, you might like to download the first set of slides.
   border-left-color: #D3D3D3;
 }
 
-#fuecorjkds .gt_heading {
+#nbpfdvtvih .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -81,7 +89,7 @@ If you’re all set, you might like to download the first set of slides.
   border-right-color: #D3D3D3;
 }
 
-#fuecorjkds .gt_title {
+#nbpfdvtvih .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -91,7 +99,7 @@ If you’re all set, you might like to download the first set of slides.
   border-bottom-width: 0;
 }
 
-#fuecorjkds .gt_subtitle {
+#nbpfdvtvih .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -101,13 +109,13 @@ If you’re all set, you might like to download the first set of slides.
   border-top-width: 0;
 }
 
-#fuecorjkds .gt_bottom_border {
+#nbpfdvtvih .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#fuecorjkds .gt_col_headings {
+#nbpfdvtvih .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -122,7 +130,7 @@ If you’re all set, you might like to download the first set of slides.
   border-right-color: #D3D3D3;
 }
 
-#fuecorjkds .gt_col_heading {
+#nbpfdvtvih .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -142,7 +150,7 @@ If you’re all set, you might like to download the first set of slides.
   overflow-x: hidden;
 }
 
-#fuecorjkds .gt_column_spanner_outer {
+#nbpfdvtvih .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -154,15 +162,15 @@ If you’re all set, you might like to download the first set of slides.
   padding-right: 4px;
 }
 
-#fuecorjkds .gt_column_spanner_outer:first-child {
+#nbpfdvtvih .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#fuecorjkds .gt_column_spanner_outer:last-child {
+#nbpfdvtvih .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#fuecorjkds .gt_column_spanner {
+#nbpfdvtvih .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -174,7 +182,7 @@ If you’re all set, you might like to download the first set of slides.
   width: 100%;
 }
 
-#fuecorjkds .gt_group_heading {
+#nbpfdvtvih .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -196,7 +204,7 @@ If you’re all set, you might like to download the first set of slides.
   vertical-align: middle;
 }
 
-#fuecorjkds .gt_empty_group_heading {
+#nbpfdvtvih .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -211,19 +219,19 @@ If you’re all set, you might like to download the first set of slides.
   vertical-align: middle;
 }
 
-#fuecorjkds .gt_striped {
+#nbpfdvtvih .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#fuecorjkds .gt_from_md > :first-child {
+#nbpfdvtvih .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#fuecorjkds .gt_from_md > :last-child {
+#nbpfdvtvih .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#fuecorjkds .gt_row {
+#nbpfdvtvih .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -242,7 +250,7 @@ If you’re all set, you might like to download the first set of slides.
   overflow-x: hidden;
 }
 
-#fuecorjkds .gt_stub {
+#nbpfdvtvih .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -254,7 +262,7 @@ If you’re all set, you might like to download the first set of slides.
   padding-left: 12px;
 }
 
-#fuecorjkds .gt_summary_row {
+#nbpfdvtvih .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -264,7 +272,7 @@ If you’re all set, you might like to download the first set of slides.
   padding-right: 5px;
 }
 
-#fuecorjkds .gt_first_summary_row {
+#nbpfdvtvih .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -274,7 +282,7 @@ If you’re all set, you might like to download the first set of slides.
   border-top-color: #D3D3D3;
 }
 
-#fuecorjkds .gt_grand_summary_row {
+#nbpfdvtvih .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -284,7 +292,7 @@ If you’re all set, you might like to download the first set of slides.
   padding-right: 5px;
 }
 
-#fuecorjkds .gt_first_grand_summary_row {
+#nbpfdvtvih .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -294,7 +302,7 @@ If you’re all set, you might like to download the first set of slides.
   border-top-color: #D3D3D3;
 }
 
-#fuecorjkds .gt_table_body {
+#nbpfdvtvih .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -303,7 +311,7 @@ If you’re all set, you might like to download the first set of slides.
   border-bottom-color: #D3D3D3;
 }
 
-#fuecorjkds .gt_footnotes {
+#nbpfdvtvih .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -317,13 +325,13 @@ If you’re all set, you might like to download the first set of slides.
   border-right-color: #D3D3D3;
 }
 
-#fuecorjkds .gt_footnote {
+#nbpfdvtvih .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#fuecorjkds .gt_sourcenotes {
+#nbpfdvtvih .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -337,47 +345,47 @@ If you’re all set, you might like to download the first set of slides.
   border-right-color: #D3D3D3;
 }
 
-#fuecorjkds .gt_sourcenote {
+#nbpfdvtvih .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#fuecorjkds .gt_left {
+#nbpfdvtvih .gt_left {
   text-align: left;
 }
 
-#fuecorjkds .gt_center {
+#nbpfdvtvih .gt_center {
   text-align: center;
 }
 
-#fuecorjkds .gt_right {
+#nbpfdvtvih .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#fuecorjkds .gt_font_normal {
+#nbpfdvtvih .gt_font_normal {
   font-weight: normal;
 }
 
-#fuecorjkds .gt_font_bold {
+#nbpfdvtvih .gt_font_bold {
   font-weight: bold;
 }
 
-#fuecorjkds .gt_font_italic {
+#nbpfdvtvih .gt_font_italic {
   font-style: italic;
 }
 
-#fuecorjkds .gt_super {
+#nbpfdvtvih .gt_super {
   font-size: 65%;
 }
 
-#fuecorjkds .gt_footnote_marks {
+#nbpfdvtvih .gt_footnote_marks {
   font-style: italic;
   font-size: 65%;
 }
 </style>
 
-<div id="fuecorjkds" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="nbpfdvtvih" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 
 <table class="gt_table">
 
@@ -467,6 +475,12 @@ Mon Sep 14th
 
 </p>
 
+<p>
+
+<a href="2-testing.pdf">Slides</a>
+
+</p>
+
 </div>
 
 </td>
@@ -505,6 +519,12 @@ Tue Sep 15th
 
 </p>
 
+<p>
+
+<a href="3-sharing.pdf">Slides</a>
+
+</p>
+
 </div>
 
 </td>
@@ -522,6 +542,12 @@ Tue Sep 15th
 <p>
 
 <em>Charlotte</em>
+
+</p>
+
+<p>
+
+<a href="notes/4-dependencies.Rmd">Notes</a>
 
 </p>
 
@@ -563,6 +589,12 @@ Wed Sep 16th
 
 </p>
 
+<p>
+
+<a href="notes/5-tidyverse.Rmd">Notes</a>
+
+</p>
+
 </div>
 
 </td>
@@ -580,6 +612,12 @@ Wed Sep 16th
 <p>
 
 <em>Sara</em>
+
+</p>
+
+<p>
+
+<a href="notes/6-interface.Rmd">Notes</a>
 
 </p>
 
@@ -621,6 +659,12 @@ Thu Sep 17th
 
 </p>
 
+<p>
+
+<a href="notes/7-interface-ii.Rmd">Notes</a>
+
+</p>
+
 </div>
 
 </td>
@@ -641,6 +685,12 @@ Thu Sep 17th
 
 </p>
 
+<p>
+
+<a href="notes/8-oop.Rmd">Notes</a>
+
+</p>
+
 </div>
 
 </td>
@@ -655,15 +705,8 @@ Thu Sep 17th
 
 <!--/html_preserve-->
 
-## Slides
-
-  - [Introduction and “The Whole Game”](1-intro.pdf)
-  - [Unit Tests](2-testing.pdf)
-  - [Documentation and Sharing](3-sharing.pdf)
-
-## Code
-
-Find our live coded notes in [`notes/`](notes/) as we commit them.
+The notes will be live coded and committed as we go, so they may be
+empty if you are looking at them before the workshop.
 
 You can see the scripts we’ll work from in [`script/`](script/), but we
 recommend not reading too far ahead because you’ll find answers to some
@@ -727,14 +770,6 @@ Have you written a few of your own R functions? Are you ready to start
 sharing your code (or data) through R packages? Are you curious what you
 can do to make your first R packages easy for your users to use, and for
 you to maintain?
-
-## Materials
-
-Materials will be made available on
-[github](https://github.com/cwickham/genentech-build-tidy-tools). The
-materials will evolve as the workshop approaches, so if you want to
-pre-download the materials, please wait until the day before the
-workshop.
 
 -----
 

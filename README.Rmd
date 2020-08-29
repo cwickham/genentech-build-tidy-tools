@@ -19,6 +19,11 @@ Building Tidy Tools
 
 by Charlotte Wickham and Sara Altman
 
+## Materials
+
+Materials will be made available on [github](https://github.com/cwickham/genentech-build-tidy-tools). 
+The materials will evolve as the workshop approaches, so if you want to pre-download the materials, please wait until the day before the workshop.  
+
 ## Setup
 
 <!-- Fix later to generate from content of repo like https://github.com/hadley/tidy-tools/blob/master/README.Rmd -->
@@ -82,15 +87,15 @@ schedule <- tribble(
   2, 1, "Documentation / Sharing", "Sara",
   "[Slides](3-sharing.pdf)",
   2, 2, "Dependencies", "Charlotte",
-  "",
+  "[Notes](notes/4-dependencies.Rmd)",
   3, 1, "Using the tidyverse in packages", "Charlotte",
-  "",
+  "[Notes](notes/5-tidyverse.Rmd)",
   3, 2, "Interface", "Sara",
-  "",
+  "[Notes](notes/6-interface.Rmd)",
   4, 1, "Interface II", "Charlotte",
-  "",
+  "[Notes](notes/7-interface-ii.Rmd)",
   4, 2, "OO programming / S3", "Charlotte", 
-  ""
+  "[Notes](notes/8-oop.Rmd)",
 ) %>% 
   mutate(
     date = (as.Date("2020-09-14") + (day - 1)) %>% day_fmt(),
@@ -107,9 +112,8 @@ schedule %>%
   gt::fmt_markdown(columns = TRUE, rows = TRUE)
 ```
 
-## Code
-
-Find our live coded notes in [`notes/`](notes/) as we commit them.
+The notes will be live coded and committed as we go, 
+so they may be empty if you are looking at them before the workshop.
 
 You can see the scripts we'll work from in [`script/`](script/), but we recommend not reading too far ahead because you'll find answers to some of the exercises, and you'll learn more if you try to work through them first.
 
@@ -152,11 +156,6 @@ You should take this workshop if you have experience programming in R and want t
 ## Is this course for me?
 
 Have you written a few of your own R functions? Are you ready to start sharing your code (or data) through R packages? Are you curious what you can do to make your first R packages easy for your users to use, and for you to maintain?
-
-## Materials
-
-Materials will be made available on [github](https://github.com/cwickham/genentech-build-tidy-tools). 
-The materials will evolve as the workshop approaches, so if you want to pre-download the materials, please wait until the day before the workshop.  
 
 -----
 
