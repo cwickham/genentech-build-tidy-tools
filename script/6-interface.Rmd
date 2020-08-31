@@ -190,6 +190,10 @@ str_capitalise(x, to = "sentence")
 str_capitalize() # ?
 ```
 
+<!--Up to here at rstudio conf.  I think this took an hour
+based on commit history.  I had used the first 30 min of this
+session to finish using tidyverse in packages. -->
+
 ## Arguments
 
 * Types
@@ -354,6 +358,8 @@ df[, i]
 
 * What do you know about `i`?
 * What do you know about the result?
+
+<!-- Interface I END HERE? -->
 
 ## Output
 
