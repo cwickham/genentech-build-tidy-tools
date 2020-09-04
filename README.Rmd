@@ -19,17 +19,34 @@ Building Tidy Tools
 
 by Charlotte Wickham and Sara Altman
 
+## Important Links
+
+
+
 ## Materials
 
 Materials will be made available on [github](https://github.com/cwickham/genentech-build-tidy-tools). 
 The materials will evolve as the workshop approaches, so if you want to pre-download the materials, please wait until the day before the workshop.  
 
+However, please don't delay on [Setup][setup].  You'll want to uncover any problems in getting the required packages before our first session together.
+
 ## Setup
 
 <!-- Fix later to generate from content of repo like https://github.com/hadley/tidy-tools/blob/master/README.Rmd -->
 
-Please make sure you've installed the following packages:
+The most important package for Day 1 is devtools:
+```{r, eval = FALSE}
+install.packages("devtools")
+```
+If you've installed devtools before, 
+you should check the component packages are also up to date,
+by following any instructions under the `devtools` section in the output of:
+```{r, eval = FALSE}
+devtools::dev_sitrep()
+```
 
+  
+To be prepared beyond Day 1, you'll also need the following packages:
 ```{r, echo = FALSE, include = FALSE}
 deps <- unique(sort(renv::dependencies()$Package))
 deps <- setdiff(deps, c(
@@ -46,7 +63,6 @@ deps <- setdiff(deps, c(
   NULL
 ))
 install <- c(
-  'install.packages("devtools")',
   paste0("install.packages(c(", paste0(encodeString(deps, quote = '"'), collapse = ", "), "))"),
   'devtools::install_github("r-lib/itdepends")'
 )
@@ -54,16 +70,12 @@ install <- c(
 ```{r code = install, eval = FALSE}
 ```
 
-``` r
+```r
 # You may also need:
 install.packages(c("ggplot2", "dplyr", "stringr"))
 
 # And get the package we'll work with later:
 usethis::create_from_github("hadley/fordogs", fork = FALSE)
-
-# if you see an error about "unsupported protocol", try this:
-usethis::create_from_github("hadley/fordogs", fork = FALSE, 
-  protocol = "https")
 ```
 
 <!-- 
@@ -79,29 +91,46 @@ library(tidyverse)
 day_fmt <- lubridate::stamp("Mon Sep 14th", order = "amd")
 schedule <- tribble(
   ~ day, ~ session, ~ topic, ~ instructor, 
-  ~ notes,
+  ~ notes, ~ desc,
   1, 1, "Introduction / The Whole Game", "Charlotte",
   "[Slides](1-intro.pdf)",
+  "Build a package from scratch before your first coffee break.",
   1, 2, "Testing", "Sara",
   "[Slides](2-testing.pdf)",
+  "Learn a testing workflow to give you confidence 
+  your code is working as intended.",
   2, 1, "Documentation / Sharing", "Sara",
   "[Slides](3-sharing.pdf)",
+  "Learn how to add documentation to your package,
+  as well as how to share you package with the world.",
   2, 2, "Dependencies", "Charlotte",
   "[Notes](notes/4-dependencies.Rmd)",
+  "Learn how to use other packages in your own packages.",
   3, 1, "Using the tidyverse in packages", "Charlotte",
   "[Notes](notes/5-tidyverse.Rmd)",
+  "Explore the challenges of including tidyverse 
+  packages in your own packages.",
   3, 2, "Interface", "Sara",
   "[Notes](notes/6-interface.Rmd)",
+  "Learn how decisions about the name and arguments
+  of your functions influence how easy they are to learn 
+  and use.",
   4, 1, "Interface II", "Charlotte",
   "[Notes](notes/7-interface-ii.Rmd)",
+  "Learn how decisions about the output
+  of your functions influence how easy they are to learn 
+  and use.",
   4, 2, "OO programming / S3", "Charlotte", 
   "[Notes](notes/8-oop.Rmd)",
+  "Learn how S3 objects work, and can improve
+  the interface of your package."
 ) %>% 
   mutate(
     date = (as.Date("2020-09-14") + (day - 1)) %>% day_fmt(),
     desc = glue::glue("**{topic}**\n 
     *{instructor}*\n
-    {notes}")
+    {notes}\n
+    <small>{desc}</small>")
   )
 schedule %>% 
   select(date, desc, session) %>% 

@@ -7,6 +7,8 @@
 
 by Charlotte Wickham and Sara Altman
 
+## Important Links
+
 ## Materials
 
 Materials will be made available on
@@ -15,14 +17,31 @@ materials will evolve as the workshop approaches, so if you want to
 pre-download the materials, please wait until the day before the
 workshop.
 
+However, please don’t delay on [Setup](#setup). You’ll want to uncover
+any problems in getting the required packages before our first session
+together.
+
 ## Setup
 
 <!-- Fix later to generate from content of repo like https://github.com/hadley/tidy-tools/blob/master/README.Rmd -->
 
-Please make sure you’ve installed the following packages:
+The most important package for Day 1 is devtools:
 
 ``` r
 install.packages("devtools")
+```
+
+If you’ve installed devtools before, you should check the component
+packages are also up to date, by following any instructions under the
+`devtools` section in the output of:
+
+``` r
+devtools::dev_sitrep()
+```
+
+To be prepared beyond Day 1, you’ll also need the following packages:
+
+``` r
 install.packages(c("fs", "glue", "hexbin", "lobstr", "rematch2", "sloop", "vctrs"))
 devtools::install_github("r-lib/itdepends")
 ```
@@ -33,10 +52,6 @@ install.packages(c("ggplot2", "dplyr", "stringr"))
 
 # And get the package we'll work with later:
 usethis::create_from_github("hadley/fordogs", fork = FALSE)
-
-# if you see an error about "unsupported protocol", try this:
-usethis::create_from_github("hadley/fordogs", fork = FALSE, 
-  protocol = "https")
 ```
 
 <!-- 
@@ -118,6 +133,13 @@ Mon Sep 14th
 
 </p>
 
+<p>
+
+<small>Build a package from scratch before your first coffee
+break.</small>
+
+</p>
+
 </div>
 
 </td>
@@ -141,6 +163,13 @@ Mon Sep 14th
 <p>
 
 <a href="2-testing.pdf">Slides</a>
+
+</p>
+
+<p>
+
+<small>Learn a testing workflow to give you confidence your code is
+working as intended.</small>
 
 </p>
 
@@ -188,6 +217,13 @@ Tue Sep 15th
 
 </p>
 
+<p>
+
+<small>Learn how to add documentation to your package, as well as how to
+share you package with the world.</small>
+
+</p>
+
 </div>
 
 </td>
@@ -211,6 +247,12 @@ Tue Sep 15th
 <p>
 
 <a href="notes/4-dependencies.Rmd">Notes</a>
+
+</p>
+
+<p>
+
+<small>Learn how to use other packages in your own packages.</small>
 
 </p>
 
@@ -258,6 +300,13 @@ Wed Sep 16th
 
 </p>
 
+<p>
+
+<small>Explore the challenges of including tidyverse packages in your
+own packages.</small>
+
+</p>
+
 </div>
 
 </td>
@@ -281,6 +330,13 @@ Wed Sep 16th
 <p>
 
 <a href="notes/6-interface.Rmd">Notes</a>
+
+</p>
+
+<p>
+
+<small>Learn how decisions about the name and arguments of your
+functions influence how easy they are to learn and use.</small>
 
 </p>
 
@@ -328,6 +384,13 @@ Thu Sep 17th
 
 </p>
 
+<p>
+
+<small>Learn how decisions about the output of your functions influence
+how easy they are to learn and use.</small>
+
+</p>
+
 </div>
 
 </td>
@@ -351,6 +414,13 @@ Thu Sep 17th
 <p>
 
 <a href="notes/8-oop.Rmd">Notes</a>
+
+</p>
+
+<p>
+
+<small>Learn how S3 objects work, and can improve the interface of your
+package.</small>
 
 </p>
 
