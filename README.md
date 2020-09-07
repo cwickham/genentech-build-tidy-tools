@@ -42,8 +42,7 @@ devtools::dev_sitrep()
 To be prepared beyond Day 1, you’ll also need the following packages:
 
 ``` r
-install.packages(c("fs", "glue", "hexbin", "lobstr", "rematch2", "sloop", "vctrs"))
-devtools::install_github("r-lib/itdepends")
+install.packages(c("glue", "hexbin", "sloop", "usethis", "vctrs"))
 ```
 
 ``` r
