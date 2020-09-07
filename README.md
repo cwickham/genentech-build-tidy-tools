@@ -443,6 +443,20 @@ recommend not reading too far ahead because you’ll find answers to some
 of the exercises, and you’ll learn more if you try to work through them
 first.
 
+## Getting Help
+
+**Polling:** Ask a question in the Q\&A at anytime. Also vote on other
+peoples’ questions.
+
+**In Breakout Rooms:**
+
+  - Ask your roommates
+  - If your room is stuck, “Ask for help” in Zoom
+    ![](https://assets.zoom.us/images/en-us/desktop/generic/in-meeting/ask-for-help-icon.png)
+
+**Zoom chat:** Reserved for urgent technical matters (e.g. “we can’t
+hear you”)
+
 ## Where to learn more
 
   - **Workflow, devtools and usethis:**
