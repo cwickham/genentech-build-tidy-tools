@@ -10,11 +10,16 @@ How and when to use code from other packages.
 
 ## Live coding
 
-Going to switch formats to live coding. Experimenting with it because it allows me to be more flexible.
+Going to switch formats to live coding. 
 
-I will try and slow down, but I'm not very good it. Please tell me if you missed something - if you did, probably other people did too.
+I will regularly check my notes into Github. 
 
-I will regularly check my notes into Github. And you can also see the complete script. I'd recommend not looking at it today; but it's a good resource if you want to come back to what you learned in the future.
+bit.ly/build-tt
+
+`notes/4-dependencies.Rmd`
+
+And you can also see the complete script. 
+I'd recommend not looking at it today.
 
 ## Motivation
 
@@ -22,35 +27,52 @@ I will regularly check my notes into Github. And you can also see the complete s
 sd
 ```
 
-What happens if we override `var()`?
-
 ```{r}
-x <- c(10, 1, 5, 2, 3, 5)
-sd(x)
-
-var <- function(x, na.rm = FALSE) 100
+x <- c(1, 1, 5, 9, 9)
 sd(x)
 ```
 
-What if we create our own `my_sd()`?
-
+Let's overwrite `var()` so it always returns 100
 ```{r}
-my_sd <- function (x, na.rm = FALSE) {
-  sqrt(var(x, na.rm = na.rm))
+var <- function(x, na.rm = FALSE){
+  100
 }
+```
 
+Poll: Now, what will we get when we run?
+```{r}
+sd(x)
+```
+* `4`, the same thing as before
+* `10`, that's `sqrt(100)`
+* I'm not sure
+
+
+OK, what if we create our own sd function:
+```{r}
+my_sd <- function (x) {
+  sqrt(var(x))
+}
+```
+
+Poll: Now, what will we get when we run?
+```{r}
 my_sd(x)
 ```
+* `4`, the same thing as before
+* `10`, that's `sqrt(100)`
+* I'm not sure
 
-Why the difference? Functions in packages look for variables in a different way to functions in scripts (i.e. functions in the global environment). The same scoping rules apply, as usual, but there's an important different in function environments.
+Start with "why the difference", 
+then we'll talk about what this means for your packages.
 
-### Warm ups
+### Your Turn: Poll
 
-* What will this function return when you run it?
-* Why? What are the rules?
-
+What will `f()` return?
 ```{r}
 x <- 1
+y <- 1
+z <- 1
 f <- function() {
   y <- 2
   z <- 2
@@ -63,117 +85,102 @@ f <- function() {
 f()
 ```
 
+* 1, 1, 1
+* 1, 1, 3
+* 1, 2, 2
+* 1, 2, 3
 
-* What's an environment?
-* How it different to a list?
-* What's the "default" environment?
-* How can you easily see the contents of an environment?
+### Your Turn: Breakout Rooms
 
-```{r}
-countdown::countdown_fullscreen(3)
-```
+Discuss:  What does `f()` return?  
+What are the rules R uses to find a variable?
+
+Timed: 4 minutes
 
 ## Scoping
 
-When you type `x`, how does find the value associated with the name `x`? It basically uses a recursive function:
+Scoping: rules that describe how R finds variables.
+
+When you type `x`, R looks in the current environment,
+if it doesn't find it, 
+it looks in the parent environment, 
+if it doesn't find it, 
+it looks in the parent environment, 
+and so on,
+until it reaches the empty environment,
+which would return an error.
+
+This same rule is always applied, 
+regardless of whether a function is in a package or script. 
+So what's the difference? The environment of the function.
+
+Helpful functions from rlang: `get_env`, `env_print`,  `env_parents()`
 
 ```{r}
 library(rlang)
-
-find_var <- function(name, env) {
-  if (env_has(env, name)) {
-    env_get(env, name)
-  } else {
-    find_var(name, env_parent(env))
-  }
-}
-
-# Then talk about terminating recursion
-
-find_var <- function(name, env) {
-  if (identical(env, empty_env())) {
-    stop("Can't find ", name)
-  } else if (env_has(env, name)) {
-    env_get(env, name)
-  } else {
-    find_var(name, env_parent(env))
-  }
-}
+get_env(my_sd) 
+env_print(get_env(my_sd))
+# there is a var() in this environment, 
+# (the one we defined)
+# so that is what is used
 ```
 
-This same rule is always applied, regardless of whether a function is in a package or script. So what's the difference? The enviroment of the funtion:
-
 ```{r}
+# the sd() function is in the `namespace:stats` environment
 get_env(sd)
-get_env(my_sd)
+env_print(get_env(sd)) # lot's of bindings!
+env_has(get_env(sd), "var") # one is var()
 
-find_var("var", get_env(sd))
-find_var("var", get_env(my_sd))
+env_has(get_env(sd), "sqrt") # it doesn't have `sqrt()`
+env_parents(get_env(sd)) # but one of its parents does
+env_has(env_parents(get_env(sd))[[1]], "sqrt")
+env_has(env_parents(get_env(sd))[[2]], "sqrt")
 ```
 
-Can make it a bit easier to see what's happening by returning the environment rather than the value:
-
-```{r}
-find_env <- function(name, env) {
-  if (identical(env, empty_env())) {
-    stop("Can't find ", name)
-  } else if (env_has(env, name)) {
-    env
-  } else {
-    find_env(name, env_parent(env))
-  }
-}
-
-find_env("var", get_env(sd))
-find_env("var", get_env(my_sd))
-```
-
-What's this special namespace environment?
-
-**Your turn**: What do you see if you look at the parents of the environments of other functions in other packages? What do they have in common?
-
+Let's look at the parents of some functions in packages:
 ```{r}
 get_env(ggplot2::geom_point)
+env_parents(get_env(ggplot2::geom_point))
+```
+
+```{r}
 get_env(dplyr::mutate)
-get_env(MASS::select)
+env_parents(get_env(dplyr::mutate))
 ```
 
----
+Always the same. 
+Functions used in a package function
+will first be looked for in the package namespace
+(i.e. all functions in the package),
+then in the package imports,
+then in the base package,
+then in the global environment.
 
-What about when a function uses a function from another package?
+To use functions from other packages
+in yours, 
+you'll need to define the contents of the
+import environemnt.
 
-```{r}
-dplyr::top_n
-find_env("enquo", get_env(dplyr::top_n))
-```
-
-```{r}
-env_parents(get_env(dplyr::top_n))
-```
-
-## Namespaces
+## Adding Dependencies to your Package
 
 ### How does this work in a package?
 
 * `create_package("~/desktop/ns")`
 * `use_mit_license()`
 * `use_r("my_sd")`
-
     ```{r}
     #' My standard deviation function
     #'
     #' @param x A numeric vector
-    #' @param na.rm Remove missing values?
     #' @export
-    my_sd <- function (x, na.rm = FALSE) {
-      sqrt(var(x, na.rm = na.rm))
+    my_sd <- function (x) {
+      sqrt(var(x))
     }
     ```
-
-* `devtools::check()`
+* `check()`. 
 
 ```
-❯ checking R code for possible problems ... NOTE
+> checking R code for possible problems ... NOTE
   my_sd: no visible global function definition for ‘var’
   Undefined global functions or variables:
     var
@@ -182,37 +189,51 @@ env_parents(get_env(dplyr::top_n))
   to your NAMESPACE file.
 ```
 
-Build and reload
+**Your Turn** - Breakout Rooms
 
-```{r}
-my_sd(1:5)
+First, repeat the steps to illustrate the problem:
+* `create_package("~/desktop/ns")`
+* `use_mit_license()`
+* `use_r("my_sd")`. Include the following function:
+    ```{r}
+    #' My standard deviation function
+    #'
+    #' @param x A numeric vector
+    #' @export
+    my_sd <- function (x) {
+      sqrt(var(x))
+    }
+    ```
+* `check()`. You should get a `NOTE` about `"Undefined global functions"`
 
-var <- function(x, na.rm = FALSE) 100
-my_sd(1:5)
-```
-
-**Your turn**:  Add the following line:
-
+Then, fix the problem. Include this in the Rxoygen comments
+above the function:
 ```{r}
 #' @importFrom stats var
 ```
 
-Then `document()`, then look at `NAMESPACE`. Build and reload. Has the problem gone away?
+`check()` to verify the `NOTE` is removed.
 
---
+**Ready to move on?** Fill out the poll.
 
+While you wait, open the `NAMESPACE` file, 
+can you tell how it has changed?
+
+### Questions?
+
+### An Alternative Solution
+
+Don't use `#' importFrom`, use `::` instead, e.g.
 ```{r}
-my_sd_env <- get_env(ns::my_sd)
-my_sd_env
-
-env_print(env_parent(my_sd_env))
-env_parent(my_sd_env)$var
-
-# Is this a copy? No!
-lobstr::ref(stats::var, env_parent(my_sd_env)$var)
+#' My standard deviation function
+#'
+#' @param x A numeric vector
+#' @export
+my_sd <- function (x) {
+  sqrt(stats::var(x))
+}
 ```
 
-**Your turn**:
 Why doesn't `sqrt()` need a namespace or an import?
 (Hint: what package is this found in? Why is it special?)
 
@@ -227,76 +248,92 @@ my_count <- function(x) {
 }
 ```
 
-You'll see the error straight away so `R CMD check` isn't so important But, if you `use_package()` then:
-
 ```{r}
-#' @importFrom ggplot2 ggplot
+check()
 ```
 
-You will get this confusing error message:
-
 ```
-❯ checking package dependencies ... ERROR
-  Namespace dependency not required: ‘ggplot2’
-  
-  See section ‘The DESCRIPTION file’ in the ‘Writing R Extensions’
-  manual.
+> checking R code for possible problems ... NOTE
+  my_count: no visible global function definition for ‘tibble’
+  my_count: no visible global function definition for ‘count’
 ```
 
-It's telling you (in a roundabout way) that your `NAMESPACE` depends on a package that is not listed in the `DESCRIPTION`. To fix this: `use_package("ggplot2")`.
+Fix with `::`:
+```{r}
+my_count <- function(x) {
+  df <- tibble::tibble(x = x)
+  dplyr::count(df, x)
+}
+```
 
-* `DESCRIPTION` is all about package level.
-* `NAMESPACE` is at function level.
+But you'll get a new `WARNING`  on `check()`:
+```
+> checking dependencies in R code ... WARNING
+  '::' or ':::' imports not declared from:
+    ‘dplyr’ ‘tibble’
+```
+
+This is a cryptic warning!  But, it indicates,
+a package level problem, we haven't indicated
+that a user needs `dplyr` and `tibble` installed,
+for our code to work.
+
+This change happens in the `DESCRIPTION`, easiest
+with:
+```{r}
+usethis::use_package("dplyr")
+usethis::use_package("tibble")
+```
+
+In `DESCRPITION`
+```
+...
+Imports: 
+    dplyr,
+    tibble
+```
 
 Why didn't stats need this? Because it's a recommended package; so R knows that it's always going to be avaiable/installed.
 
-### Other options
+* `DESCRIPTION` is all about package level. You need to maintain.
+* `NAMESPACE` is at function level. Use documentation to maintain.
 
-```{r}
-my_sd <- function (x, na.rm = FALSE) {
-  sqrt(stats::var(x, na.rm = na.rm))
-}
-```
+**Your Turn** Breakout Rooms
 
+1. Add this function to your ns package
+    ```{r}
+    my_count <- function(x) {
+      df <- tibble(x = x)
+      count(df, x)
+    }
+    ```
+2. Document the function
+
+3. Get `check()` passing.
+
+Ready to move on?  Check in with your group.
+When everyone is ready, one person, answer the poll.
+
+While you wait... re-write `my_count()` to use
+the pipe `%>%`, then get `check()` passing.  
+Hint: `?usethis::use_pipe()`
+
+### Questions?
+
+### Don't use `#' import`
+
+E.g.
 ```{r}
 #' @import stats
-my_sd <- function (x, na.rm = FALSE) {
-  sqrt(var(x, na.rm = na.rm))
+my_sd <- function (x) {
+  sqrt(var(x))
 }
 ```
 
-For functions that you only use in a few place I think this is easier for the human (although it's slightly more work for the computer)
+Saves typing, but harder for you to keep track of where
+functions are coming from.  More chance of conflicts.
 
-* Never use `@import`
-* Prefer `::`
-* Use `@importFrom` when `::` gets annoying, or for infix functions (more on that later)
-
-### Never do this
-
-```{r}
-var <- stats::var
-```
-
-* This creates a copy of `stats::vars` when the package is built
-
-* If the functions `stats::var` calls change, you can end up with a function
-  that is subtly out of sync - this causes problems that are nightmarishly
-  difficult to track down (seriously it took me and Winston like 6 months
-  to figure this out the first time we did it.)
-
-### Practice
-
-* Put this in a package called counting
-* Document it
-* Get R CMD check passing
-
-```{r}
-my_count <- function(x) {
-  count(tibble(x = x), x, sort = TRUE)
-}
-```
-
-### Recap of ways to use a function from another package?
+### Recap of ways to use a function from another package
 
 Always start with `use_package()`
 
@@ -304,6 +341,17 @@ Always start with `use_package()`
 * `@importFrom` common functions,  infix functions (like the pipe)
 * `@import` only for packages specifically designed to be used in this way
 * `foo <- pkg::foo` never do this unless you enjoy spending hours debugging.
+
+## Exports
+
+The search path that R uses to look for functions:
+```{r}
+search()
+```
+
+`#' @export` in Roxygen comment makes functions 
+available when your package is loaded.  
+You don't have to export all functions.
 
 ## When to take a dependency?
 
@@ -322,119 +370,3 @@ Benefits:
 * someone else wrote the code
 
 Most of the costs are proportional to the number of people using your package. So when you start out, it's genuinely something that you shouldn't worry too much about. Keep an ear out for people having problems, and don't add gratuitiously, but otherwise don't worry about it. If you're using a single function from a package, might not be worth it. But beware false friends.
-
----
-
-**Your turn**: How can you measure the costs? Look at the CRAN pages for glue vs. dplyr. What can you quantify?
-
-* how many other packages use?
-* number of github issues: 24 (glue) vs 67 (dplyr)
-* needed packags: 0 (glue) vs 13+ (dplyr)
-* windows package size: 170 kb (glue) vs 3.2 mb (dplyr)
-* install time: 3s (glue) vs 300s (dplyr)
-
----
-
-Another v. useful tool is itdepends:
-
-```{r}
-# http://github.com/r-lib/itdepends
-itdepends::dep_weight(c("glue", "dplyr"))
-```
-
-Talk through different fields.
-
-### Do as we say not as we do
-
-We have different constraints:
-
-* Full time programmers
-* Hundreds of thousands of users
-
-Sometimes the tidyverse team avoids taking dependencies even if it causes substantially more work for us. More important when packages downloaded hundreds of thousands of times. Other packages (usethis, pkgdown) we don't care that much about.
-
-Other teams have different constraints _and_ different values.
-
-```{r}
-glimpse(itdepends::dep_weight(c("data.table", "dplyr")))
-```
-
-### Imports vs suggests
-
-Main decision is whether to put function in imports or suggests. Generally, imports is the right place. There are a few exceptions that should go in suggests:
-
-* Optional, low-benefit and/or high-cost.
-* Only needed in tests (i.e. other developers need it)
-* Only needed in examples/vignettes (common for data package)
-* Extending package by providing methods
-
-If suggested, you should protect code:
-
-```{r}
-if (requireNamespace("ggplot2", quietly = FALSE)) {
-  
-}
-```
-
-`use_package(type = "suggest")` will remind you how to do this.
-
-## Case studies
-
-### dplyr vs. tidyverse
-
-If you just need `mutate()` or `filter()`, should you:
-
-* use tidyverse?
-* use dplyr?
-* use `[`?
-
-```{r}
-df <- data.frame(x = c(1:10, NA))
-
-df[df$x < 5, ]
-dplyr::filter(df, x < 5)
-```
-
-### Matching strings
-
-```{r}
-dates <- c("2016-04-20", "1977-08-08", "not a date", NA)
-isodate <- "(\\d{4})-(\\d{2})-(\\d{2})"
-
-matches <- regexec(isodate, dates)
-regmatches(dates, matches)
-
-stringr::str_match(dates, isodate)
-rematch2::re_match(dates, isodate)
-```
-
-* What's the cost of depedending on stringr? What's the cost of depending on rematch2?
-* What's the benefit of using `str_match()`? What's the benefit of usign `re_match()`?
-
-### fs package
-  
-```{r}
-# base R
-path1 <- tempfile()
-path2 <- tempfile()
-
-file.copy(path1, path2)
-file.create(path1)
-file.copy(path1, path2)
-file.copy(path1, path2)
-
-library(fs)
-
-path1 <- file_temp()
-path2 <- file_temp()
-
-file_copy(path1, path2)
-file_create(path1)
-file_copy(path1, path2)
-file_copy(path1, path2)
-```
-
-* unicode file names
-* how heavy is fs?
-* how does `file_copy()` differ from `file.copy()`?
-* what other benefits does fs have? <http://fs.r-lib.org/>
