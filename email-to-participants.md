@@ -19,6 +19,9 @@ with a 30 minute break from 10:00am to 10:30am.
 
 We'll get you the Zoom link once it is finalized.
 
+If you have any questions feel free to email Charlotte,
+cwickham@gmail.com, directly.
+
 See you next week,
 Charlotte and Sara
 
