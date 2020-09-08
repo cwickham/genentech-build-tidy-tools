@@ -1,18 +1,412 @@
 # Tidyverse in packages
 
-* How to refer to functions (recap)
 * Tidy evaluation
   * Data masking
   * Tidy select
+* How to refer to functions (recap)
 * Data in packages
 
-Draws heavily on <https://ggplot2.tidyverse.org/dev/articles/ggplot2-in-packages.html>,
-(thanks to [Dewey Dunnington](http://github.com/paleolimbot)) and <https://dplyr.tidyverse.org/dev/articles/programming.html>.
+Draws heavily on <https://dplyr.tidyverse.org/articles/programming.html>
 
-I'm going to focus on ggplot2, with a dash of dplyr, 
+I'm going to focus on ggplot2, and dplyr, 
 but the same principles apply to basically any function in the tidyverse.
 
-## Recap 
+Evolved a lot over the last few years.  
+Tidyverse has been so successful, 
+because it emphasizes expression with less typing.
+
+It does this a framework known as tidy evaluation.
+
+Comes with some challenges,
+you might encounter when you try to use
+tidyverse functions inside your own functions.
+
+## Data masking
+
+Data masking is one kind of tidy evaluation - 
+the framework that tidyverse packages use to make **doing** data analysis easier.
+
+**Your Turn**: Breakout Rooms
+
+The following calls use variables: 
+`mtcars`, `cyl`, `mpg`, `starwars`, `homeworld`, and `species`.
+But, you could group them into two types of variables. 
+
+Discuss:  What are the two groups? How would you describe the groups?
+```{r}
+library(tidyverse) 
+
+mtcars %>% 
+  group_by(cyl) %>% 
+  summarise(n = n(), mpg = mean(mpg))
+
+starwars %>% 
+  filter(homeworld == "Naboo", species == "Human")
+```
+
+PollEV: Open ended response, one per breakout room.
+
+---
+
+* `mtcars`, `starwars` are "programming" variables 
+    that exist in the environment, **env-variables**.  
+
+*  `cyl`, `mpg`, `homeworld`, and `species` are "statistical" variables 
+    that exist inside data, **data-variables**.
+
+At its heart tidyeval blurs the line between 
+variables in an environment (env-variables), and 
+variables in a data frame (data-variables). 
+
+### (+) Data-masking makes code more concise
+
+This blurring gives much more concise code, 
+e.g. compare to the base equivalent: 
+```{r}
+starwars[starwars$homeworld == "Naboo" & starwars$species == "Human", ]
+```
+Here we have to be explicit about `homeworld` and `species` being data-variables 
+by prefacing with `starwars$`.
+
+### (-) Data-masking makes some things harder
+
+Two problems:
+
+1. Can lead to ambiguity, subtle erros.  `R CMD check` can't find data-variables in the environment, so it complains. 
+2. It's hard to use indirection; i.e. storing a data-variable in an env-variable
+
+Two things to learn about:
+* `.data` pronoun
+* embracing with `{{`
+
+### 1. Be explicit about data-vars and env-vars
+
+```{r}
+keep_small_cyl <- function(x){
+  mtcars %>% 
+    filter(cyl < x)
+}
+keep_small_cyl(5)
+```
+
+But there is a subtle problem, what if the data contains 
+a column called `x`.
+
+```{r}
+mtcars$x <- 1
+keep_small_cyl(5)
+```
+
+```
+ mtcars %>% 
+    filter(cyl < x)
+```
+`cyl` is a data-var, `x` is an env-var.  
+rlang provides the `.data` and `.env` pronouns
+to help disambiguate. 
+
+Can use whenever an argument is indicated as `<data-masking>`.
++ `aes()` and `vars()` in ggplot2
+
+```{r}
+keep_small_cyl <- function(x){
+  mtcars %>% 
+    filter(.data$cyl < .env$x)
+}
+keep_small_cyl(5)
+mtcars$x <- 1
+keep_small_cyl(5)
+```
+
+**Your turn:** Breakout Rooms (5min)
+
+Make these refer explicitly to data-vars with `.data`:
+```{r}
+cyl_plot <- function(){
+  ggplot(mtcars) + 
+    geom_bar(aes(cyl)) + 
+    coord_flip()
+}
+cyl_plot()
+```
+
+```{r}
+cyl_sum_wt <- function(){
+  mtcars %>%
+  group_by(cyl) %>%
+  summarise(n = n(), avg = mean(wt))
+}
+cyl_sum_wt()
+```
+
+**Challenge:** Can you extend `keep_small_cyl()` to work
+with a user supplied string for the column name? E.g.
+
+```{r}
+keep_small("hp", 65)
+#>             mpg cyl  disp hp drat    wt  qsec vs am gear carb x
+#> Merc 240D   24.4   4 146.7 62 3.69 3.190 20.00  1  0    4    2 1
+#> Honda Civic 30.4   4  75.7 52 4.93 1.615 18.52  1  1    4    2 1
+
+keep_small("mpg", 11)
+#>                     mpg cyl disp  hp drat    wt  qsec vs am gear  carb x
+#> Cadillac Fleetwood  10.4   8  472 205 2.93 5.250 17.98  0  0    3    4 1
+#> Lincoln Continental 10.4   8  460 215 3.00 5.424 17.82  0  0    3    4 1
+```
+
+### 2. It's hard to use indirection
+
+```{r}
+cyl_plot <- function(){
+  ggplot(mtcars) + 
+    geom_bar(aes(cyl)) + 
+    coord_flip()
+}
+```
+
+Can we create `bar_plot()` that works like `cyl_plot()`,
+except instead of always plotting the `cyl` column,
+the user provides the variable to be plotted?
+
+E.g. `bar_plot(cyl)` should give the same result as `cyl_plot()`
+
+Try:
+```{r}
+bar_plot <- function(var){
+  mtcars +
+    geom_bar(aes(.data$var)) +
+    coord_flip()
+}
+```
+``Error: Column `var` not found in `.data` ``
+
+### 2. Fix by making user provide character string and use `.data`
+
+Make user provide a string `bar_plot("cyl")`.
+We can use `.data` but now provide `var` in `[[`:
+```{r}
+bar_plot <- function(var){
+  mtcars +
+    geom_bar(aes(.data[[var]])) +
+    coord_flip()
+}
+```
+
+But what if you want the function to work like tidyverse functions: `bar_plot(cyl)`?
+
+New idea! Embracing.
+
+### 2. To work like tidyverse function, fix with embracing `{{`
+
+Need to tell `aes()` that env-variable `var` contains a data-variable: 
+do that with embracing, `{{`.
+
+```{r}
+bar_plot <- function(var){
+  ggplot(mtcars) +
+    geom_bar(aes({{ var }})) +
+    coord_flip()
+}
+```
+
+Think about `{{` a special signifier that this enviornment
+variable contatins a data variable.
+
+Inspired by glue
+```{r}
+name <- "Charlotte"
+glue::glue('Hello, my name is { name }')
+```
+
+
+Other alternatives: make user provide `aes()` call, use `...`.
+
+**Your turn**:  Breakout Rooms
+
+Make these functions work:
+
+```{r}
+cyl_sum <- function(x){
+  mtcars %>%
+  group_by(.data$cyl) %>%
+  summarise(n = n(), avg = mean(x))
+}
+cyl_sum(wt)
+```
+
+```{r}
+hexbin <- function(df, x, y, bins = 10) {
+  df %>% 
+    ggplot(aes(x, y)) + 
+    geom_hex(bins = bins)
+}
+hexbin(diamonds, carat, price)
+```
+
+```{r}
+group_summary <- function(df, grp, x) {
+  df %>% 
+    group_by(grp) %>% 
+    summarise(
+      n = n(),
+      min = min(x, na.rm = TRUE),
+      max = max(x, na.rm = TRUE)
+    )
+}
+group_summary(mtcars, cyl, mpg)
+```
+
+**Challenge**: Allow `group_summary()` to take two grouping variables. 
+
+**Solutions**
+
+```{r}
+group_summary <- function(df, grp, x) {
+  df %>% 
+    group_by({{ grp }}) %>% 
+    summarise(
+      n = n(),
+      min = min({{ x }}, na.rm = TRUE),
+      max = max({{ x }}, na.rm = TRUE)
+    )
+}
+group_summary(mtcars, cyl, mpg)
+```
+
+```{r}
+group_summary <- function(df, grp, x) {
+  df %>% 
+    group_by(across({{ grp }})) %>% 
+    summarise(
+      n = n(),
+      min = min({{ x }}, na.rm = TRUE),
+      max = max({{ x }}, na.rm = TRUE)
+    )
+}
+group_summary(mtcars, c(cyl, carb), mpg)
+```
+
+### Data Masking - Summary
+
+dplyr: `arrange()`, `filter()`, `group_by()`, `mutate()`, and `summarise()`  
+ggplot2’s: `aes()`, `var()`
+
+Arguments that use data masking 
+will be indicated in docs with `<data-masking>`.
+
+* You (as developer) know the data-variable is `x`: `arrange(df, .data$x)`
+* Name of data-variable is a **character string** in an env-variable `x`: 
+`arrange(df, .data[[x]])`
+* Data-variable is passed as a function argument `x`: `arrange(df, {{ x }})`
+
+Remember `...` can be passed through - no special treatment required.
+
+
+## Tidy Selection 
+
+The other half of tidy evaluation, used in functions like:
+`select()`, `rename()`, `pivot_longer()` ...
+When working with columns.
+
+Implemented with tidyselect package: 
+choose variables based on their position, name, or type.
+
+Run into similar problem with indirection;
+```{r}
+my_select <- function(df, x) {
+  df %>% 
+    select(x)
+}
+my_select(mtcars, cyl)
+```
+<!-- Example fixed with embracing -->
+```{r}
+my_select <- function(df, x) {
+  df %>% 
+    select({{ x }})
+}
+my_select(mtcars, cyl)
+my_select(mtcars, c(cyl, wt))
+```
+
+```r
+vars <- c("cyl", "gear")
+mtcars %>% 
+  select(all_of(vars))
+```
+
+### Tidy select - Summary
+
+Some functions have "select" semantics - 
+you don't give them operations that work with values, 
+but operations that work with column names:
+
+* You (as developer) know the column is `x`:  `select(df, x)`
+* Name of column is a **character string** in an env-variable `x`: 
+`select(df, all_of(x))`
+* Column is passed as a function argument `x`: `select(df, {{ x }})`
+
+Remember `...` can be passed through - no special treatment required.
+
+https://dplyr.tidyverse.org/articles/programming.html
+
+Undergoing some changes for dplyr 1.0.0:
+
+* `one_of()` replaced by `any_of()` and `all_of()` - 
+what should happen if variable doesn't exist in data frame?
+
+* Tidy selection inside data masking functions? New function `across()`, used with `mutate()` and `summarise()`,  replaces `mutate_at()`, `summarise_at()`, `mutate_if()` etc.
+
+## Putting it all together
+
+Get this package:
+```{r}
+usethis::create_from_github("cwickham/tidytest", fork = FALSE)
+```
+
+It has our fixed `cyl_sum()` function in it, 
+but it isn't passing `check()`.
+
+Your task: Get this package passing `check()`.
+
+Hints:
+* You'll need to make sure add the dplyr dependencies
+* `.data` is from `rlang`, use
+    ```{r}
+    #' @importFrom rlang .data`
+    ```
+    and don't forget to add the dependency to your DESCRIPTION with
+`use_package("rlang")`
+
+
+## Data
+
+To include data in a package:
+
+* `use_data_raw("name_of_dataset")`
+* creates an R file in `data-raw` with same name as your dataset
+* `usethis::use_data()` to create the binary data file that R uses (wrapper around `save()`)
+
+* To document: 
+  * `use_r("data")`
+  *
+      ```R
+      #' Title
+      #'
+      #' @description
+      #' Data dictionary:
+      #'
+      #' * `var1`: description1
+      "name_of_dataset"
+      ```
+
+A little more information at <https://roxygen2.r-lib.org/articles/rd.html#datasets>
+
+
+## Putting it together
+
+Put tidy evaluation functino in a package, and
+get R CMD check to pass.
 
 **Your turn**: Turn this code in to package. 
 Use what you learned yesterday to get as much as possible of R CMD check to work. 
@@ -86,327 +480,3 @@ but doesn't change the implicit dependencies.
 ---
 
 <!-- Commit tidytest -->
-
-## Data masking
-
-Data masking is one kind of tidy evaluation - 
-the framework that tidyverse packages use to make **doing** data analysis easier.
-
-**Your Turn**: The following function calls use variables 
-`mtcars`, `cyl`, `mpg`, `starwars`, `homeworld`, and `species`.
-There's really two types of variables here. What are they? What's the difference?
-```{r}
-mtcars %>% 
-  group_by(cyl) %>% 
-  summarise(n = n(), mpg = mean(mpg))
-
-starwars %>% 
-  filter(homeworld == "Naboo", species == "Human")
-```
-
----
-
-* `mtcars`, `starwars` are "programming" variables 
-    that exist in the environment, **env-variables**.  
-
-*  `cyl`, `mpg`, `homeworld`, and `species` are "statistical" variables 
-    that exist inside data, **data-variables**.
-
-At its heart tidyeval blurs the line between 
-variables in an environment (env-variables), and 
-variables in a data frame (data-variables). 
-
-### (+) Data-masking makes code more concise
-
-This blurring gives much more concise code, 
-e.g. compare to the base equivalent: 
-```{r}
-starwars[starwars$homeworld == "Naboo" & starwars$species == "Human", ,]
-```
-Here we have to be explicit about `homeworld` and `species` being data-variables 
-by prefacing with `starwars$`.
-
-### (-) Data-masking makes some things harder
-
-Two problems:
-
-1. `R CMD check` can't find data-variables in the environment, so it complains
-2. It's hard to use indirection; i.e. storing a data-variable in an env-variable
-
-Tidy evaluation is implemented by the rlang package, 
-primarily through `enquo()` and `eval_tidy()`.  
-
-### 1. Fix with rlang's `.data` pronoun
-
-To fix the `R CMD check` note, 
-we need to be more specific that `cyl` and `mpg` are data-variables.
-
-rlang provides a `.data` pronoun.
-Use it in a function that uses data masking 
-to be explicit about a data variable.
-
-Two steps to use in a package:
-
-* Need to import `.data` from `rlang`, and include rlang in Imports
-* Refer to data variables as `.data$var`
-
-```{r}
-#' @importFrom rlang .data
-cyl_plot <- function(){
-  ggplot2::ggplot(mtcars) +
-    ggplot2::geom_bar(ggplot2::aes(.data$cyl)) +
-    ggplot2::coord_flip()
-}
-```
-
-**Your turn**: Add this function and get R CMD check passing:
-
-```{r}
-#' @export
-#' @importFrom rlang .data
-diamonds_summary2 <- function(bins) {
-  ggplot2::diamonds %>% 
-    ggplot2::ggplot(ggplot2::aes(carat, price)) + 
-    ggplot2::geom_hex(bins = bins)
-}
-```
-
-### 2. It's hard to use indirection
-
-Can we create `bar_plot()` that works like `cyl_plot()`,
-except instead of always plotting the `cyl` column,
-the user provides the variable to be plotted?
-
-E.g. `bar_plot(cyl)` should give the same result as `cyl_plot()`
-
-Try:
-```{r}
-bar_plot <- function(var){
-  mtcars +
-    ggplot2::geom_bar(ggplot2::aes(.data$var)) +
-    ggplot2::coord_flip()
-}
-```
-``Error: Column `var` not found in `.data` ``
-
-### 2. Fix by making user provide character string and use `.data`
-
-Make user provide a string `bar_plot("cyl")`.
-We can use `.data` but now provide `var` in `[[`:
-```{r}
-bar_plot <- function(var){
-  mtcars +
-    ggplot2::geom_bar(ggplot2::aes(.data[[var]])) +
-    ggplot2::coord_flip()
-}
-```
-
-But what if you want the function to work like tidyverse functions: `bar_plot(cyl)`?
-
-### 2. To work like tidyverse function, fix with embracing `{{`
-
-Need to tell `aes()` that env-variable `var` contains a data-variable: 
-do that with embracing, `{{`.
-
-```{r}
-bar_plot <- function(var){
-  ggplot2::ggplot(mtcars) +
-    ggplot2::geom_bar(ggplot2::aes({{ var }})) +
-    ggplot2::coord_flip()
-}
-```
-
-Inspired by glue
-```{r}
-name <- "Charlotte"
-glue::glue('Hello, my name is { name }')
-```
-
-
-Other alternatives: make user provide `aes()` call, use `...`.
-
-**Your turn**: Make these functions work and pass R CMD check
-
-```{r}
-cyl_sum <- function(x){
-  mtcars %>%
-  dplyr::group_by(.data$cyl) %>%
-  dplyr::summarise(n = dplyr::n(), avg = mean(x))
-}
-cyl_sum(wt)
-```
-
-```{r}
-hexbin <- function(df, x, y, bins = 10) {
-  df %>% 
-    ggplot2::ggplot(ggplot2::aes(x, y)) + 
-    ggplot2::geom_hex(bins = bins)
-}
-hexbin(diamonds, carat, price)
-```
-
-```{r}
-group_summary <- function(df, grp, x) {
-  df %>% 
-    group_by(grp) %>% 
-    summarise(
-      n = n(),
-      min = min(x, na.rm = TRUE),
-      max = max(x, na.rm = TRUE)
-    )
-}
-group_summary(mtcars, cyl, mpg)
-```
-
-**Challenge**: Allow `group_summary()` to take two grouping variables. 
-
----
-
-```{r}
-cyl_sum <- function(x){
-  mtcars %>%
-  dplyr::group_by(.data$cyl) %>%
-  dplyr::summarise(n = dplyr::n(), avg = mean({{ x }}))
-}
-cyl_sum(wt)
-```
-
-```{r}
-hexbin <- function(df, x, y, bins = 10) {
-  df %>% 
-    ggplot2::ggplot(ggplot2::aes({{ x }}, {{ y }})) + 
-    ggplot2::geom_hex(bins = bins)
-}
-hexbin(diamonds, carat, price)
-```
-
-```{r}
-group_summary <- function(df, grp, x) {
-  df %>% 
-    group_by({{ grp }}) %>% 
-    summarise(
-      n = n(),
-      min = min({{ x }}, na.rm = TRUE),
-      max = max({{ x }}, na.rm = TRUE)
-    )
-}
-group_summary(mtcars, cyl, mpg)
-```
-```{r}
-group_summary <- function(df, grp1, grp2, x) {
-  df %>% 
-    group_by({{ grp1 }}, {{ grp2 }}) %>% 
-    summarise(
-      n = n(),
-      min = min({{ x }}, na.rm = TRUE),
-      max = max({{ x }}, na.rm = TRUE)
-    )
-}
-group_summary(mtcars, cyl, gear, mpg)
-```
-
-```{r}
-group_summary <- function(df, x, ...) {
-  df %>% 
-    group_by(...) %>% 
-    summarise(
-      n = n(),
-      min = min({{ x }}, na.rm = TRUE),
-      max = max({{ x }}, na.rm = TRUE)
-    )
-}
-group_summary(mtcars, mpg, cyl, gear)
-group_summary(mtcars, mpg, cyl)
-```
----
-
-### Data Masking - Summary
-
-dplyr: `arrange()`, `filter()`, `group_by()`, `mutate()`, and `summarise()`  
-ggplot2’s: `aes()`
-
-In future, arguments that use data masking 
-will be indicated in docs with `<data-masking>`.
-
-* You (as developer) know the data-variable is `x`: `arrange(df, .data$x)`
-* Name of data-variable is a **character string** in an env-variable `x`: 
-`arrange(df, .data[[x]])`
-* Data-variable is passed as a function argument `x`: `arrange(df, {{ x }})`
-
-Remember `...` can be passed through - no special treatment required.
-
-## Tidy Selection 
-
-The other half of tidy evaluation, used in functions like:
-`select()`, `rename()`, `pivot_longer()` ...
-
-Implemented with tidyselect package: 
-choose variables based on their position, name, or type.
-
-Run into similar problem with indirection;
-```{r}
-my_select <- function(df, x) {
-  df %>% 
-    select(x)
-}
-my_select(mtcars, cyl)
-```
-<!-- Example fixed with embracing -->
-```{r}
-my_select <- function(df, x) {
-  df %>% 
-    select({{ x }})
-}
-my_select(mtcars, cyl)
-```
-
-```r
-vars <- c("cyl", "gear")
-mtcars %>% 
-  select(one_of(vars))
-```
-
-### Tidy select - Summary
-
-Some functions have "select" semantics - 
-you don't give them operations that work with values, 
-but operations that work with column names:
-
-* You (as developer) know the column is `x`:  `select(df, one_of("x"))`
-* Name of column is a **character string** in an env-variable `x`: 
-`select(df, one_of(x))`
-* Column is passed as a function argument `x`: `select(df, {{ x }})`
-
-Remember `...` can be passed through - no special treatment required.
-
-https://dplyr.tidyverse.org/dev/articles/programming.html
-
-Undergoing some changes for dplyr 1.0.0:
-
-* `one_of()` replaced by `any_of()` and `all_of()` - 
-what should happen if variable doesn't exist in data frame?
-
-* Tidy selection inside data masking functions? New function `across()`, used with `mutate()` and `summarise()`,  replaces `mutate_at()`, `summarise_at()`, `mutate_if()` etc.
-
-## Data
-
-To include data in a package:
-
-* `use_data_raw("name_of_dataset")`
-* creates an R file in `data-raw` with same name as your dataset
-* `usethis::use_data()` to create the binary data file that R uses (wrapper around `save()`)
-
-* To document: 
-  * `use_r("data")`
-  *
-      ```R
-      #' Title
-      #'
-      #' @description
-      #' Data dictionary:
-      #'
-      #' * `var1`: description1
-      "name_of_dataset"
-      ```
-
-A little more information at <https://roxygen2.r-lib.org/articles/rd.html#datasets>
