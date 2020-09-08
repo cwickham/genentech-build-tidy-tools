@@ -22,7 +22,7 @@ We'll get you the Zoom link once it is finalized.
 If you have any questions feel free to email Charlotte,
 cwickham@gmail.com, directly.
 
-See you next week,
+See you next week,  
 Charlotte and Sara
 
 ## Setup
@@ -52,5 +52,5 @@ install.packages(c("glue", "hexbin", "sloop", "usethis", "vctrs"))
 install.packages(c("ggplot2", "dplyr", "stringr"))
 
 # And get the package we'll work with later:
-usethis::create_from_github("hadley/fordogs", fork = FALSE)
+usethis::create_from_github("skaltman/fordogs", fork = FALSE)
 ```

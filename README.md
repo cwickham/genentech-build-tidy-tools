@@ -50,7 +50,7 @@ install.packages(c("glue", "hexbin", "sloop", "usethis", "vctrs"))
 install.packages(c("ggplot2", "dplyr", "stringr"))
 
 # And get the package we'll work with later:
-usethis::create_from_github("hadley/fordogs", fork = FALSE)
+usethis::create_from_github("skaltman/fordogs", fork = FALSE)
 ```
 
 <!-- 
