@@ -66,13 +66,33 @@ s3_dispatch(print(ordered(1:3)))
 
 Then `s3_get_method()` to find the implementation.
 
-**Your turn**: Find the implementation of print for factors, numerics, and dates.
+## Your turn:
+
+Find the implementation for the print functions for numerics and dates.
+
+`sloop::s3_dispatch()`, given a specific object, see how R found the method
+`sloop::s3_get_method()`, give a specific method, see the implementation
 
 ```{r}
-s3_get_method(print.Date)
-s3_get_method(print.POSIXct)
-s3_get_method(print.factor)
+x <- 1:10
+y <- Sys.Date()
+z <- Sys.time()
 ```
+
+```{r}
+sloop::s3_dispatch(print(x))
+sloop::s3_get_method(print.default)
+class(y)
+class(z)
+s3_dispatch(print(y))
+s3_get_method(print.Date)
+s3_dispatch(print(z))
+s3_get_method(print.POSIXct)
+```
+
+If you are returning complicated objects, like a list, 
+creating a new S3 class, let's you write a nice 
+`print()` method to be easy on your users.
 
 ## Create a new class by adding the class attribute
 
@@ -91,7 +111,7 @@ Best practices at: https://adv-r.hadley.nz/s3.html#s3-classes
 ## Create a new method by creating a function with a special name
 
 `{generic}.{class}`   
-Arguments much match generic.
+Arguments must match generic.
 
 ```{r}
 print.foo <- function(x, ...) {
@@ -224,4 +244,9 @@ bizarro.factor <- function(x) {
   x
 }
 ```
+
+## Conclusions?
+
+Making your S3 vectors display nicley in a tibble
+https://vctrs.r-lib.org/articles/pillar.html
 
