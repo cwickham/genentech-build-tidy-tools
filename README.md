@@ -9,6 +9,12 @@ by Charlotte Wickham and Sara Altman
 
 ## Important Links
 
+[Sli.do](https://app.sli.do/event/71rqfi1i) for Q\&A and live polls
+
+[Google
+Doc](https://docs.google.com/document/d/1vahqtJ2d8zoidy1jZ19w3fxEBNWXY0YSarwtuoo-rkA/edit?usp=sharing)
+for reporting on your breakout room progress
+
 ## Materials
 
 Materials will be made available on
@@ -445,14 +451,14 @@ first.
 
 ## Getting Help
 
-**Polling:** Ask a question in the Q\&A at anytime. Also vote on other
-peoples’ questions.
+[**Sli.do**](https://app.sli.do/event/71rqfi1i): Ask a question in the
+Q\&A at anytime. Also vote on other peoples’ questions.
 
 **In Breakout Rooms:**
 
   - Ask your roommates
-  - If your room is stuck, “Ask for help” in Zoom
-    ![](https://assets.zoom.us/images/en-us/desktop/generic/in-meeting/ask-for-help-icon.png)
+  - If your room is stuck, “Ask for help” in the [Google
+    Doc](https://docs.google.com/document/d/1vahqtJ2d8zoidy1jZ19w3fxEBNWXY0YSarwtuoo-rkA/edit?usp=sharing)
 
 **Zoom chat:** Reserved for urgent technical matters (e.g. “we can’t
 hear you”)
