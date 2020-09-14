@@ -39,7 +39,7 @@ var <- function(x, na.rm = FALSE){
 }
 ```
 
-Poll: Now, what will we get when we run?
+Now, what will we get when we run?
 ```{r}
 sd(x)
 ```
@@ -55,7 +55,7 @@ my_sd <- function (x) {
 }
 ```
 
-Poll: Now, what will we get when we run?
+Slido: Now, what will we get when we run?
 ```{r}
 my_sd(x)
 ```
@@ -85,6 +85,9 @@ f <- function() {
 f()
 ```
 
+slido.com #80875 
+passcode: tidytools
+
 * 1, 1, 1
 * 1, 1, 3
 * 1, 2, 2
@@ -92,8 +95,10 @@ f()
 
 ### Your Turn: Breakout Rooms
 
-Discuss:  What does `f()` return?  
-What are the rules R uses to find a variable?
+Discuss:  
+
+* What does `f()` return?  
+* What are the rules R uses to find a variable?
 
 Timed: 4 minutes
 
@@ -130,11 +135,7 @@ env_print(get_env(my_sd))
 get_env(sd)
 env_print(get_env(sd)) # lot's of bindings!
 env_has(get_env(sd), "var") # one is var()
-
-env_has(get_env(sd), "sqrt") # it doesn't have `sqrt()`
-env_parents(get_env(sd)) # but one of its parents does
-env_has(env_parents(get_env(sd))[[1]], "sqrt")
-env_has(env_parents(get_env(sd))[[2]], "sqrt")
+env_parents(get_env(sd))
 ```
 
 Let's look at the parents of some functions in packages:
@@ -165,19 +166,11 @@ import environemnt.
 
 ### How does this work in a package?
 
-* `create_package("~/desktop/ns")`
-* `use_mit_license()`
-* `use_r("my_sd")`
-    ```{r}
-    #' My standard deviation function
-    #'
-    #' @param x A numeric vector
-    #' @export
-    my_sd <- function (x) {
-      sqrt(var(x))
-    }
-    ```
-* `check()`. 
+```{r}
+usethis::create_from_github("cwickham/ns", fork = FALSE)
+```
+
+`check()`:
 
 ```
 > checking R code for possible problems ... NOTE
@@ -191,30 +184,22 @@ import environemnt.
 
 **Your Turn** - Breakout Rooms
 
-First, repeat the steps to illustrate the problem:
-* `create_package("~/desktop/ns")`
-* `use_mit_license()`
-* `use_r("my_sd")`. Include the following function:
-    ```{r}
-    #' My standard deviation function
-    #'
-    #' @param x A numeric vector
-    #' @export
-    my_sd <- function (x) {
-      sqrt(var(x))
-    }
-    ```
+Get the ns package:
+```{r}
+usethis::create_from_github("cwickham/ns", fork = FALSE)
+```
+
 * `check()`. You should get a `NOTE` about `"Undefined global functions"`
 
-Then, fix the problem. Include this in the Rxoygen comments
-above the function:
+* Fix the problem. Include this in the Roxygen comments
+above the `my_sd()` function:
 ```{r}
 #' @importFrom stats var
 ```
 
-`check()` to verify the `NOTE` is removed.
+* `check()` to verify the `NOTE` is removed.
 
-**Ready to move on?** Fill out the poll.
+**Ready to move on?** Indicate in the Google Doc.
 
 While you wait, open the `NAMESPACE` file, 
 can you tell how it has changed?
