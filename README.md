@@ -15,6 +15,10 @@ by Charlotte Wickham and Sara Altman
 Doc](https://docs.google.com/document/d/1vahqtJ2d8zoidy1jZ19w3fxEBNWXY0YSarwtuoo-rkA/edit?usp=sharing)
 for reporting on your breakout room progress
 
+[Archive of
+Q\&A](https://docs.google.com/document/d/1PxGsv9spATRa453Q2lboDmKA1BP0odC2vw5ipWLjqe8/edit?usp=sharing)
+Questions and their answers from Slido
+
 ## Materials
 
 Materials will be made available on
@@ -48,7 +52,7 @@ devtools::dev_sitrep()
 To be prepared beyond Day 1, you’ll also need the following packages:
 
 ``` r
-install.packages(c("glue", "hexbin", "sloop", "usethis"))
+install.packages(c("glue", "here", "hexbin", "sloop", "usethis"))
 ```
 
 ``` r
