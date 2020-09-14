@@ -48,7 +48,7 @@ devtools::dev_sitrep()
 To be prepared beyond Day 1, you’ll also need the following packages:
 
 ``` r
-install.packages(c("glue", "hexbin", "sloop", "usethis", "vctrs"))
+install.packages(c("glue", "hexbin", "sloop", "usethis"))
 ```
 
 ``` r
@@ -134,7 +134,7 @@ Mon Sep 14th
 
 <p>
 
-<a href="1-intro.pdf">Slides</a>
+<a href="https://github.com/cwickham/genentech-build-tidy-tools/raw/master/1-intro.pdf">Slides</a>
 
 </p>
 
@@ -167,7 +167,7 @@ break.</small>
 
 <p>
 
-<a href="2-testing.pdf">Slides</a>
+<a href="https://github.com/cwickham/genentech-build-tidy-tools/raw/master/2-testing.pdf">Slides</a>
 
 </p>
 
@@ -218,7 +218,7 @@ Tue Sep 15th
 
 <p>
 
-<a href="3-sharing.pdf">Slides</a>
+<a href="https://github.com/cwickham/genentech-build-tidy-tools/raw/master/3-sharing.pdf">Slides</a>
 
 </p>
 
