@@ -91,13 +91,66 @@ Discuss:
 
 Timed: 4 minutes
 
+What does `f` return?
+```{r}
+f()
+```
 
+## Scoping Rules
 
+Rules that R uses to find variables.
 
+R looks in the current environment first.
+If R can't find it, R looks in the parent environment,
+If R can't find it there, R looks in the parent environment,
+and so, until it finds it, 
+or it reach the empty environment.
 
+The parent environment of a function is where it was 
+defined (not called).
 
+These same rules are followed for functions you've defined,
+or for function inside packages.
 
+useful functions from rlang:
 
+```{r}
+library(rlang)
+get_env(my_sd)
+env_print(get_env(my_sd))
+# Q: for Charlotte why is parent rlang
+```
+
+```{r}
+get_env(sd)
+env_print(get_env(sd))
+env_has(get_env(sd), "var")
+env_parents(get_env(sd))
+```
+```{r}
+get_env(ggplot2::geom_point)
+env_parents(get_env(ggplot2::geom_point))
+```
+```{r}
+get_env(dplyr::mutate)
+env_parents(get_env(dplyr::mutate))
+```
+
+Always the same. 
+Functions used in a package function
+will first be looked for in the package namespace,
+`namespace:package_name`
+(i.e. all functions in the package),
+then in the package imports, `imports:package_name`
+then in the base package, 
+then in the global environment.
+
+To use functions from other packages
+in yours, 
+you'll need to define the contents of the
+import environemnt.
+
+## Adding Dependencies to your Package
 
 
 
