@@ -150,6 +150,27 @@ in yours,
 you'll need to define the contents of the
 import environemnt.
 
+**Your Turn** - Breakout Rooms
+
+Get the ns package:
+```{r}
+usethis::create_from_github("cwickham/ns", fork = FALSE)
+```
+
+* `check()`. You should get a `NOTE` about `"Undefined global functions"`
+
+* Fix the problem. Include this in the Roxygen comments
+above the `my_sd()` function:
+```{r}
+#' @importFrom stats var
+```
+
+* `check()` to verify the `NOTE` is removed.
+
+Use google doc to report progress.
+
+(~ 5mins)
+
 ## Adding Dependencies to your Package
 
 
