@@ -1,0 +1,20 @@
+# Dependencies
+
+How and when to use code from other packages.
+
+* Motivation
+* Scoping: how functions find variables
+* `NAMESPACE`
+* `DESCRIPTION`
+* When should you take a dependency?
+
+
+## Live coding
+
+Going to switch formats to live coding. 
+
+I will regularly check my notes into Github. 
+
+bit.ly/build-tt
+
+`notes/4-dependencies.Rmd`
