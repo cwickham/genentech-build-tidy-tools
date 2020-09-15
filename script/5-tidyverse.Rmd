@@ -44,7 +44,9 @@ starwars %>%
   filter(homeworld == "Naboo", species == "Human")
 ```
 
-PollEV: Open ended response, one per breakout room.
+Answer in:
+slido.com #80875 
+passcode: tidytools
 
 ---
 
@@ -73,6 +75,7 @@ by prefacing with `starwars$`.
 Two problems:
 
 1. Can lead to ambiguity, subtle erros.  `R CMD check` can't find data-variables in the environment, so it complains. 
+
 2. It's hard to use indirection; i.e. storing a data-variable in an env-variable
 
 Two things to learn about:
@@ -118,9 +121,11 @@ mtcars$x <- 1
 keep_small_cyl(5)
 ```
 
-**Your turn:** Breakout Rooms (5min)
+**Your turn:** Code along (5 min)
 
-Make these refer explicitly to data-vars with `.data`:
+Make these three functions refer explicitly to data-vars with `.data`:
+
+1.
 ```{r}
 cyl_plot <- function(){
   ggplot(mtcars) + 
@@ -130,6 +135,7 @@ cyl_plot <- function(){
 cyl_plot()
 ```
 
+2. 
 ```{r}
 cyl_sum_wt <- function(){
   mtcars %>%
@@ -139,10 +145,20 @@ cyl_sum_wt <- function(){
 cyl_sum_wt()
 ```
 
-**Challenge:** Can you extend `keep_small_cyl()` to work
+3.
+```{r}
+mpg_hist <- function(binwidth = 1){
+  mtcars %>% 
+    ggplot() +
+    geom_histogram(aes(x = mpg), binwidth = binwidth)
+}
+mpg_hist()
+```
+
+**While you wait:** Can you extend `keep_small_cyl()` to work
 with a user supplied string for the column name? E.g.
 
-```{r}
+```{r, error = TRUE}
 keep_small("hp", 65)
 #>             mpg cyl  disp hp drat    wt  qsec vs am gear carb x
 #> Merc 240D   24.4   4 146.7 62 3.69 3.190 20.00  1  0    4    2 1
@@ -173,10 +189,11 @@ E.g. `bar_plot(cyl)` should give the same result as `cyl_plot()`
 Try:
 ```{r}
 bar_plot <- function(var){
-  mtcars +
+  ggplot(mtcars) +
     geom_bar(aes(.data$var)) +
     coord_flip()
 }
+bar_plot(cyl)
 ```
 ``Error: Column `var` not found in `.data` ``
 
@@ -186,10 +203,11 @@ Make user provide a string `bar_plot("cyl")`.
 We can use `.data` but now provide `var` in `[[`:
 ```{r}
 bar_plot <- function(var){
-  mtcars +
+  ggplot(mtcars) +
     geom_bar(aes(.data[[var]])) +
     coord_flip()
 }
+bar_plot("cyl")
 ```
 
 But what if you want the function to work like tidyverse functions: `bar_plot(cyl)`?
@@ -209,10 +227,10 @@ bar_plot <- function(var){
 }
 ```
 
-Think about `{{` a special signifier that this enviornment
-variable contatins a data variable.
+Think about `{{` as a special signal that this environment
+variable contains a data variable.
 
-Inspired by glue
+Inspired by glue:
 ```{r}
 name <- "Charlotte"
 glue::glue('Hello, my name is { name }')
@@ -223,9 +241,10 @@ Other alternatives: make user provide `aes()` call, use `...`.
 
 **Your turn**:  Breakout Rooms
 
-Make these functions work:
-
+Add embracing to make these three functions work:
+1.
 ```{r}
+# Summarise a column by cylinder
 cyl_sum <- function(x){
   mtcars %>%
   group_by(.data$cyl) %>%
@@ -233,8 +252,9 @@ cyl_sum <- function(x){
 }
 cyl_sum(wt)
 ```
-
+2.
 ```{r}
+# A hexbin plot of two columns
 hexbin <- function(df, x, y, bins = 10) {
   df %>% 
     ggplot(aes(x, y)) + 
@@ -242,8 +262,9 @@ hexbin <- function(df, x, y, bins = 10) {
 }
 hexbin(diamonds, carat, price)
 ```
-
+3. 
 ```{r}
+# three number summary of a column by a grouping variable
 group_summary <- function(df, grp, x) {
   df %>% 
     group_by(grp) %>% 
@@ -255,9 +276,11 @@ group_summary <- function(df, grp, x) {
 }
 group_summary(mtcars, cyl, mpg)
 ```
+(8 mins)
 
-**Challenge**: Allow `group_summary()` to take two grouping variables. 
+**While you wait**: Allow `group_summary()` to take two grouping variables. 
 
+---
 **Solutions**
 
 ```{r}
@@ -401,82 +424,3 @@ To include data in a package:
       ```
 
 A little more information at <https://roxygen2.r-lib.org/articles/rd.html#datasets>
-
-
-## Putting it together
-
-Put tidy evaluation functino in a package, and
-get R CMD check to pass.
-
-**Your turn**: Turn this code in to package. 
-Use what you learned yesterday to get as much as possible of R CMD check to work. 
-Copy and paste from github!
-
-```{r}
-library(ggplot2)
-library(dplyr)
-
-# Create a local copy of first 10 rows of mtcars data frame
-# We'll come back how you should store this later
-mtcars <- data.frame(
-  mpg = c(21, 21, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2),
-  cyl = c(6, 6, 4, 6, 8, 6, 8, 4, 4, 6),
-  disp = c(160, 160, 108, 258, 360, 225, 360, 146.7, 140.8, 167.6),
-  hp = c(110, 110, 93, 110, 175, 105, 245, 62, 95, 123),
-  drat = c(3.9, 3.9, 3.85, 3.08, 3.15, 2.76, 3.21, 3.69, 3.92, 3.92),
-  wt = c(2.62, 2.875, 2.32, 3.215, 3.44, 3.46, 3.57, 3.19, 3.15, 3.44),
-  qsec = c(16.46, 17.02, 18.61, 19.44, 17.02, 20.22, 15.84, 20, 22.9, 18.3),
-  vs = c(0, 0, 1, 1, 0, 1, 0, 1, 1, 1),
-  am = c(1, 1, 1, 0, 0, 0, 0, 0, 0, 0),
-  gear = c(4, 4, 4, 3, 3, 3, 3, 4, 4, 4),
-  carb = c(4, 4, 1, 1, 2, 1, 4, 2, 2, 4)
-)
-
-# cyl_plot()
-ggplot(mtcars) + 
-  geom_bar(aes(cyl)) + 
-  coord_flip()
-
-# cyl_sum()
-mtcars %>% 
-  group_by(cyl) %>% 
-  summarise(n = n(), mpg = mean(mpg))
-```
-
-**Hints:**
-
-* `create_package("~/desktop/tidytest")`
-* `use_mit_license()` / `use_gpl3_license()`
-* make two functions: `cyl_plot()` and `cyl_summary()`
-* make it work - remember dependency stuff (`use_something()`, and `::`)
-* get check passing as cleanly as you can
-* GREEN post it when done; PINK post it for problems
-
-**Your goal:**  `0 errors ✓ | 0 warnings ✓ | 1 note x`:
-```
-> checking R code for possible problems ... NOTE
-  cyl_plot: no visible binding for global variable ‘cyl’
-  cyl_sum: no visible binding for global variable ‘cyl’
-  cyl_sum: no visible binding for global variable ‘mpg’
-  Undefined global functions or variables:
-    cyl mpg
-
-0 errors ✓ | 0 warnings ✓ | 1 note x
-```
-
-<!-- Commit up to here before starting -->
-
----
-
-To get it working:
-
-* Remove calls to `library()`, and instead call `use_package()` once
-* Use `::` or `@importFrom` to access the functions
-* `@importFrom magrittr %>%` to access the pipe
-
-Using magrittr increases the explicit dependencies, 
-but doesn't change the implicit dependencies.
-
----
-
-<!-- Commit tidytest -->
