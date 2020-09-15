@@ -18,3 +18,89 @@ I will regularly check my notes into Github.
 bit.ly/build-tt
 
 `notes/4-dependencies.Rmd`
+
+## Motivation
+
+```{r}
+sd
+```
+
+```{r}
+x <- c(1, 1, 5, 9, 9)
+sd(x)
+```
+
+```{r}
+var <- function(x, na.rm = FALSE){
+  100
+}
+```
+
+What will we get when we run?:
+```{r}
+sd(x)
+```
+Answer in:
+slido.com #80875 
+passcode: tidytools
+
+```{r}
+my_sd <- function(x){
+  sqrt(var(x))
+}
+```
+
+What will happen if we run:
+```{r}
+my_sd(x)
+```
+Answer in:
+slido.com #80875 
+passcode: tidytools
+
+What will `f()` return?
+```{r}
+x <- 1
+y <- 1
+z <- 1
+f <- function() {
+  y <- 2
+  z <- 2
+  g <- function() {
+    z <- 3
+    c(x, y, z)
+  }
+  g()
+}
+f()
+```
+* 1, 1, 1
+* 1, 1, 3
+* 1, 2, 2
+* 1, 2, 3
+
+slido.com #80875 
+passcode: tidytools
+
+### Your Turn: Breakout Rooms
+
+Discuss:  
+
+* What does `f()` return?  
+* What are the rules R uses to find a variable?
+
+Timed: 4 minutes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
