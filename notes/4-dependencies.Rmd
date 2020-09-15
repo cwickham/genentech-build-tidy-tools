@@ -279,3 +279,46 @@ While you wait... re-write `my_count()` to use
 the pipe `%>%`, then get `check()` passing.  
 Hint: `?usethis::use_pipe()`
 
+(5 mins)
+
+### Don't use `#' import`
+
+E.g.
+```{r}
+#' @import stats
+my_sd <- function (x) {
+  sqrt(var(x))
+}
+```
+
+Saves typing, but harder for you to keep track of where
+functions are coming from.  More chance of conflicts.
+
+### Recap of ways to use a function from another package
+
+Always start with `use_package()`
+
+* `::`, default, have to use for data.
+* `@importFrom` common functions,  infix functions (like the pipe)
+* `@import` only for packages specifically designed to be used in this way
+* `foo <- pkg::foo` never do this unless you enjoy spending hours debugging.
+
+## Takeaways
+
+Functions in packages are found using the same rules as
+variables in R.
+
+But, the environment of functions in packages
+is the package namespace, then the package imports.
+
+To use functions from other packages in your own, 
+you need to:
+* Be explicit about where the function is from, either:
+    * `#' importFrom ` in Roxygen comment, or
+    * use `::`
+* Make sure your users get these package by including them in the `DESCRIPTION` file with:
+    ```{r}
+    usethis::use_package()
+    ```
+    
+    
