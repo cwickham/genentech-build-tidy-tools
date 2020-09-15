@@ -169,18 +169,113 @@ above the `my_sd()` function:
 
 * `check()` to verify the `NOTE` is removed.
 
-Use google doc to report progress.
-
-(~ 5mins)
+(~ 6 mins)
 
 **Ready to move on?** Indicate in the Google Doc.
 
 While you wait, open the `NAMESPACE` file, 
 can you tell how it has changed?
 
+### An Alternative Solution
 
+Don't use `#' @importFrom`, use `::` instead, e.g.
+```{r}
+#' My standard deviation function
+#'
+#' @param x A numeric vector
+#' @export
+my_sd <- function (x) {
+  sqrt(stats::var(x))
+}
+```
 
+Why didn't we get a note for `sqrt()`? It's in the base
+package.
 
+### Non-base packages
 
+Things work a little differently (more obviously) when you're using a package in a non-base package:
 
+```{r}
+my_count <- function(x) {
+  df <- tibble(x = x)
+  count(df, x)
+}
+```
+
+```{r}
+check()
+```
+
+```{r}
+check()
+```
+
+```
+> checking R code for possible problems ... NOTE
+  my_count: no visible global function definition for ‘tibble’
+  my_count: no visible global function definition for ‘count’
+```
+
+Fix with `::`:
+```{r}
+my_count <- function(x) {
+  df <- tibble::tibble(x = x)
+  dplyr::count(df, x)
+}
+```
+
+But you'll get a new `WARNING`  on `check()`:
+```
+> checking dependencies in R code ... WARNING
+  '::' or ':::' imports not declared from:
+    ‘dplyr’ ‘tibble’
+```
+
+This is a cryptic warning!  But, it indicates,
+a package level problem, we haven't indicated
+that a user needs `dplyr` and `tibble` installed,
+for our code to work.
+
+This change happens in the `DESCRIPTION`, easiest
+with:
+```{r}
+usethis::use_package("dplyr")
+usethis::use_package("tibble")
+```
+
+In `DESCRPITION`
+```
+...
+Imports: 
+    dplyr,
+    tibble
+```
+
+Why didn't stats need this? Because it's a recommended package; so R knows that it's always going to be avaiable/installed.
+
+* `DESCRIPTION` is all about package level. You need to maintain.
+* `NAMESPACE` is at function level. Use documentation to maintain.
+
+**Your Turn** Breakout Rooms
+
+1. Add this function to your ns package
+    ```{r}
+    my_count <- function(x) {
+      df <- tibble(x = x)
+      count(df, x)
+    }
+    ```
+2. (Optional) Document the function
+
+3. Get `check()` passing.
+  * refer to functions explicitly `::`
+  * `use_package()`
+
+Ready to move on?  Check in with your group.
+When everyone is ready, one person, answer the poll.
+
+While you wait... re-write `my_count()` to use
+the pipe `%>%`, then get `check()` passing.  
+Hint: `?usethis::use_pipe()`
 
