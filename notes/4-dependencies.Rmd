@@ -150,6 +150,8 @@ in yours,
 you'll need to define the contents of the
 import environemnt.
 
+## Adding Dependencies to your Package
+
 **Your Turn** - Breakout Rooms
 
 Get the ns package:
@@ -171,7 +173,11 @@ Use google doc to report progress.
 
 (~ 5mins)
 
-## Adding Dependencies to your Package
+**Ready to move on?** Indicate in the Google Doc.
+
+While you wait, open the `NAMESPACE` file, 
+can you tell how it has changed?
+
 
 
 
