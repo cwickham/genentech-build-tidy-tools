@@ -7,3 +7,22 @@
 
 Draws heavily on <https://dplyr.tidyverse.org/articles/programming.html>
 
+**Your Turn**: Breakout Rooms
+
+The following calls use variables: 
+`mtcars`, `cyl`, `mpg`, `starwars`, `homeworld`, and `species`.
+But, you could group them into two types of variables. 
+
+Discuss:  What are the two groups? How would you describe the groups?
+```{r}
+library(tidyverse) 
+mtcars %>% 
+  group_by(cyl) %>% 
+  summarise(n = n(), mpg = mean(mpg))
+starwars %>% 
+  filter(homeworld == "Naboo", species == "Human")
+```
+
+Answer in:
+slido.com #80875 
+passcode: tidytools
