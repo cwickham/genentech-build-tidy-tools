@@ -209,6 +209,41 @@ grepl(pattern, x, fixed = TRUE, ignore.case = TRUE)
 gregexpr(pattern, text, fixed = TRUE)
 ```
 
+### Data, descriptors, and details
 
+* Data: `x` and `text`
 
+  * Primary vector of data. 
+  * Required. 
+
+* Descriptors: `pattern` and `split`
+
+  * Essential feature of the operation to be carried out. 
+  * Required.
+  
+* Details: `fixed` and `ignore.case`
+
+  * Optional. 
+  * Additional details. 
+  
+Order:
+
+1. Data
+2. Descriptors 
+(3. `...`)
+4. Details
+
+Benefits:
+
+* Works with the pipe ( %>% )
+* Ordered from most important to least
+* Forces details to be named
+
+### Required
+
+#### Your turn: Poll
+
+Which of `sample()`'s arguments are required?
+
+2 min
 
