@@ -98,11 +98,11 @@ Can use whenever an argument is indicated as `<data-masking>`.
 
 Make these three functions refer explicitly to data-vars with `.data`:
 
-1.
+1. `aes()` uses data masking
 ```{r}
 cyl_plot <- function(){
   ggplot(mtcars) + 
-    geom_bar(aes(cyl)) + 
+    geom_bar(aes(.data$cyl)) +   
     coord_flip()
 }
 cyl_plot()
@@ -112,8 +112,8 @@ cyl_plot()
 ```{r}
 cyl_sum_wt <- function(){
   mtcars %>%
-  group_by(cyl) %>%
-  summarise(n = n(), avg = mean(wt))
+  group_by(.data$cyl) %>%
+  summarise(n = n(), avg = mean(.data$wt))
 }
 cyl_sum_wt()
 ```
@@ -123,7 +123,7 @@ cyl_sum_wt()
 mpg_hist <- function(binwidth = 1){
   mtcars %>% 
     ggplot() +
-    geom_histogram(aes(x = mpg), binwidth = binwidth)
+    geom_histogram(aes(x = .data$mpg), binwidth = binwidth)
 }
 mpg_hist()
 ```
