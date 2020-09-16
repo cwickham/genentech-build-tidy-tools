@@ -142,4 +142,43 @@ keep_small("mpg", 11)
 #> Lincoln Continental 10.4   8  460 215 3.00 5.424 17.82  0  0    3    4 1
 ```
 
+### 2. It's hard to use indirection
+ 
+My goal: write function `bar_plot(cyl)` that gives same result as 
+`cyl_plot()` but works for any column:
 
+```{r}
+bar_plot <- function(var){
+  ggplot(mtcars) + 
+    geom_bar(aes(.data$var)) + 
+    coord_flip()
+}
+bar_plot(cyl)
+```
+```{r}
+bar_plot <- function(var){
+  ggplot(mtcars) + 
+    geom_bar(aes(.data[[var]])) + 
+    coord_flip()
+}
+bar_plot("cyl")
+```
+What we really want `bar_plot(cyl)`, or do things like `bar_plot(sqrt(cyl))`.
+
+Embracing `{{`: Inside argument that are <data-masking>,
+`{{ var }}` signal that `var` is an environment variable,
+contains a data variable. 
+
+`var` it's an argument, so inside the function its an
+available variable.
+
+But, it contain a data variable: `cyl`
+
+```{r}
+bar_plot <- function(var){
+  ggplot(mtcars) + 
+    geom_bar(aes({{ var }})) + 
+    coord_flip()
+}
+bar_plot(gear)
+```
