@@ -26,3 +26,120 @@ starwars %>%
 Answer in:
 slido.com #80875 
 passcode: tidytools
+
+(5-6 mins)
+
+# Data Masking
+
+One side to tidy evaluation.
+
+## Two types of variables
+
+* `mtcars` and `starwars`, datasets, *environmment variables* **env-vars**: exist in global environment.
+
+* `mpg`, `homeworld`, `species`, columns/variables inside the data frames, *data variables* **data-vars** for short: exist inside a data frame / tibble.
+
+Tidyverse blurs the distinction betweem the env-vars
+and data-var, because it save typing, and makes life 
+better:
+```{r}
+library(tidyverse)
+starwars %>% 
+  filter(homeworld == "Naboo", species == "Human")
+
+starwars[starwars$homeworld == "Naboo" & starwars$species == "Human", ]
+```
+
+
+### (-) Data-masking makes some things harder
+
+Two problems:
+
+1. Can lead to ambiguity, subtle errors.  `R CMD check` can't find data-variables in the environment, so it complains. 
+
+2. It's hard to use indirection; i.e. storing a data-variable in an env-variable
+
+Two things to learn about:
+
+* `.data` and `.env` pronouns
+* embracing `{{` 
+
+## Be explicit about where variables ocme from: .data or .env
+
+```{r}
+keep_small_cyl <- function(x){
+  mtcars %>% 
+    filter(cyl < x)
+}
+keep_small_cyl(5)
+```
+Subtle but important problem:
+```{r}
+mtcars$x <- 1
+keep_small_cyl(5)
+```
+Ambiguity about where `x` should come from: env-variable, data-variable.
+
+You have be explicit about data-vars and env-vars.
+The package rlang provides `.data` and `.env`
+
+```{r}
+keep_small_cyl <- function(x){
+  mtcars %>% 
+    filter(.data$cyl < .env$x)
+}
+keep_small_cyl(5)
+```
+
+Can use whenever an argument is indicated as `<data-masking>`.
++ `aes()` and `vars()` in ggplot2
+
+**Your turn:** Code along (5 min)
+
+Make these three functions refer explicitly to data-vars with `.data`:
+
+1.
+```{r}
+cyl_plot <- function(){
+  ggplot(mtcars) + 
+    geom_bar(aes(cyl)) + 
+    coord_flip()
+}
+cyl_plot()
+```
+
+2. 
+```{r}
+cyl_sum_wt <- function(){
+  mtcars %>%
+  group_by(cyl) %>%
+  summarise(n = n(), avg = mean(wt))
+}
+cyl_sum_wt()
+```
+
+3.
+```{r}
+mpg_hist <- function(binwidth = 1){
+  mtcars %>% 
+    ggplot() +
+    geom_histogram(aes(x = mpg), binwidth = binwidth)
+}
+mpg_hist()
+```
+
+**While you wait:** Can you extend `keep_small_cyl()` to work
+with a user supplied string for the column name? E.g.
+
+```{r, error = TRUE}
+keep_small("hp", 65)
+#>             mpg cyl  disp hp drat    wt  qsec vs am gear carb x
+#> Merc 240D   24.4   4 146.7 62 3.69 3.190 20.00  1  0    4    2 1
+#> Honda Civic 30.4   4  75.7 52 4.93 1.615 18.52  1  1    4    2 1
+keep_small("mpg", 11)
+#>                     mpg cyl disp  hp drat    wt  qsec vs am gear  carb x
+#> Cadillac Fleetwood  10.4   8  472 205 2.93 5.250 17.98  0  0    3    4 1
+#> Lincoln Continental 10.4   8  460 215 3.00 5.424 17.82  0  0    3    4 1
+```
+
+
