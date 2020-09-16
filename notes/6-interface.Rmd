@@ -100,14 +100,115 @@ Evaluate on our three guidelines.
 Time: 8 minutes
 
 ```{r}
-grepl(value = TRUE) 
-grep()              
-grepl()           
-sub()             
-gsub()            
-strsplit()        
-regexpr()         
+grepl(value = TRUE) # -> str_subset()
+grep()              # -> str_which() 
+grepl()             # -> str_detect()
+sub()               # -> str_replace()
+gsub()              # -> str_replace_all()
+strsplit()          # -> str_split()
+regexpr()           # -> str_locate()       
 ```
+
+Base R function names:
+* Not really verbs.
+* Are concise, but they aren't very clear.
+* Difficult to differentiate them. 
+
+Stringr function names:
+* Are verbs (for the most part).
+* Clear and concise (for the part). Follow a common pattern, including helpful prefix.
+* Somewhat easy to differentiate them. 
+
+`str_detect()`, `str_which()`, and `str_subset()`. All the English words (detect, which, subset) have pretty similar meanings. 
+
+```{r}
+str_detect(c("apple", "pluot", "banana"), "a")
+str_which(c("apple", "pluot", "banana"), "a")
+str_subset(c("apple", "pluot", "banana"), "a")
+```
+What's the difference between `str_detect()`, `str_which()`, and `str_subset()`? Main difference is in their output type. 
+
+```{r}
+str_detect() # str_something_lgl() ?
+str_which()  # str_something_int() ?
+str_subset() # str_something_chr() ?
+```
+
+Verbs aren't always necessary. There are time that nouns can be a good idea. 
+
+1. For example, when you're building up objects.
+
+```{r}
+# ggplot2 functions
+
+library(ggplot2)
+
+ggplot()
+geom_histogram()
+scale_x_discrete()
+coord_flip()
+```
+
+2. When you're extracting a property.
+
+```{r}
+length()
+str_length()
+
+# get_length()
+# str_get_length()
+```
+
+Guidelines: Function names should:
+
+* Probably be verbs. 
+* Be clear and concise. 
+* Distinguish one function from related functions. 
+
+### Prefixes and suffixes
+
+* Use prefixes to group together related functions.
+  Advantage: autocomplete
+* Use suffixes for variations on a theme.
+  * `str_replace()` and `str_replace_all()`
+* Decide between `snake_case` and `camelCase`. Pick one and be consistent. 
+
+### Guidelines for function names
+
+Function names should:
+* Probably be verbs.
+* Be clear and concise. 
+* Distinguish a function from related functions.
+* (if relevant) use prefixes to group together related functions.
+* (if relevant) use suffixes to identify functions that are variants of each other.
+
+### Advice
+
+* Try a thesaurus. 
+* Choose dense words. 
+* Edit down. There is other context besides just the function name. (`mutate()` doesn't need to be `mutate_data_frame()`).
+* If you're stuck, try writing down exactly what your function does. 
+* Consume good function names. 
+
+## Arguments
+
+* Types (groups)
+* Properties of arguments:
+  * Required / not required
+  * Hidden / not hidden
+  * Enumerated / not enumerated
+  * Independent / dependent
+
+### Your turn: Poll
+
+Divide the arguments of the following functions into groups. 
+
+```{r}
+strsplit(x, split, fixed = TRUE)
+grepl(pattern, x, fixed = TRUE, ignore.case = TRUE)
+gregexpr(pattern, text, fixed = TRUE)
+```
+
 
 
 
