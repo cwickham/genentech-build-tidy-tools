@@ -1,0 +1,66 @@
+# Notes
+
+bit.ly/build-tt
+
+`notes/6-interface.Rmd`
+
+# Function interface
+
+## Plan
+
+* Intro to function interface
+*
+*
+
+Goal: How do you make a package (functions) that is easy and pleasant to use?
+
+* Interface: outside of the function. All the parts of a function that the user will see and interact with.
+* Implementation: inside of the function. Specifics of how your algorithm is carried out.
+
+Draws from: <http://design.tidyverse.org/>
+
+## Your Turn: Poll
+
+What are the properties of a function that define its interface? (Hint: There are at least 9!)
+
+Time: 3 minutes
+
+* Function name 
+* Arguments (inputs)
+  * Name
+  * Types
+  * Defaults 
+* Output 
+* Errors
+* Side effects
+  * Copy things to clipboard
+  * Messages 
+  * Save/write files
+  
+## Case study: base R string functions vs. stringr functions
+
+Base R string functions are not wrong or bad! All functions can be improved, and it's useful to critique existing work. 
+
+### Your Turn: Breakout rooms
+
+Time: 10 minutes
+
+Discussion:
+* Critique the interface of the base R string functions.
+  * Think particularly about names and arguments. 
+
+Then:
+* Answer the sli.do questions
+
+```{r, eval = FALSE}
+strsplit(x, split, ...)
+grep(pattern, x, value = FALSE, ...)
+grepl(pattern, x, ...)
+sub(pattern, replacement, x, ...)
+regexpr(pattern, text, ...)
+gregexpr(pattern, text, ...)
+substr(x, start, stop)
+```
+
+
+
