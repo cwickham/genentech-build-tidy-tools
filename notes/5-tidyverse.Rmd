@@ -182,3 +182,86 @@ bar_plot <- function(var){
 }
 bar_plot(gear)
 ```
+
+
+**Your turn**:  Breakout Rooms
+
+Add embracing to make these three functions work:
+1.
+```{r}
+# Summarise a column by cylinder
+cyl_sum <- function(x){
+  mtcars %>%
+  group_by(.data$cyl) %>%
+  summarise(n = n(), avg = mean(x))
+}
+cyl_sum(wt)
+```
+2.
+```{r}
+# A hexbin plot of two columns
+hexbin <- function(df, x, y, bins = 10) {
+  df %>% 
+    ggplot(aes(x, y)) + 
+    geom_hex(bins = bins)
+}
+hexbin(diamonds, carat, price)
+```
+3. 
+```{r}
+# three number summary of a column by a grouping variable
+group_summary <- function(df, grp, x) {
+  df %>% 
+    group_by(grp) %>% 
+    summarise(
+      n = n(),
+      min = min(x, na.rm = TRUE),
+      max = max(x, na.rm = TRUE)
+    )
+}
+group_summary(mtcars, cyl, mpg)
+```
+
+
+**While you wait**: Allow `group_summary()` to take two grouping variables. 
+
+**Your turn**:  Breakout Rooms
+
+Add embracing to make these three functions work:
+1.
+```{r}
+# Summarise a column by cylinder
+cyl_sum <- function(x){
+  mtcars %>%
+  group_by(.data$cyl) %>%
+  summarise(n = n(), avg = mean(x))
+}
+cyl_sum(wt)
+```
+2.
+```{r}
+# A hexbin plot of two columns
+hexbin <- function(df, x, y, bins = 10) {
+  df %>% 
+    ggplot(aes(x, y)) + 
+    geom_hex(bins = bins)
+}
+hexbin(diamonds, carat, price)
+```
+3. 
+```{r}
+# three number summary of a column by a grouping variable
+group_summary <- function(df, grp, x) {
+  df %>% 
+    group_by(grp) %>% 
+    summarise(
+      n = n(),
+      min = min(x, na.rm = TRUE),
+      max = max(x, na.rm = TRUE)
+    )
+}
+group_summary(mtcars, cyl, mpg)
+```
+(8 mins)
+
+**While you wait**: Allow `group_summary()` to take two grouping variables. 
