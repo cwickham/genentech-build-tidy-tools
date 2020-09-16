@@ -52,7 +52,7 @@ devtools::dev_sitrep()
 To be prepared beyond Day 1, you’ll also need the following packages:
 
 ``` r
-install.packages(c("glue", "here", "hexbin", "sloop", "usethis"))
+install.packages(c("glue", "hexbin", "sloop", "usethis"))
 ```
 
 ``` r
@@ -62,6 +62,7 @@ install.packages(c("ggplot2", "dplyr", "stringr"))
 # And get some partial packages we'll work with later:
 usethis::create_from_github("skaltman/fordogs", fork = FALSE)
 usethis::create_from_github("cwickham/ns", fork = FALSE)
+usethis::create_from_github("cwickham/tidytest", fork = FALSE)
 ```
 
 <!-- 
