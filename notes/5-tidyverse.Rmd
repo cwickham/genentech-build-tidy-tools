@@ -265,3 +265,175 @@ group_summary(mtcars, cyl, mpg)
 (8 mins)
 
 **While you wait**: Allow `group_summary()` to take two grouping variables. 
+
+---
+1.
+```{r}
+# Summarise a column by cylinder
+cyl_sum <- function(x){
+  mtcars %>%
+  group_by(.data$cyl) %>%
+  summarise(n = n(), avg = mean({{ x }}))
+}
+cyl_sum(gear)
+```
+2.
+```{r}
+# A hexbin plot of two columns
+hexbin <- function(df, x, y, bins = 10) {
+  df %>% 
+    ggplot(aes({{ x }}, {{ y }})) + 
+    geom_hex(bins = bins)
+}
+hexbin(diamonds, carat, price)
+```
+3. 
+```{r}
+# three number summary of a column by a grouping variable
+group_summary <- function(df, grp, x) {
+  df %>% 
+    group_by({{ grp }}) %>% 
+    summarise(
+      n = n(),
+      min = min({{ x }}, na.rm = TRUE),
+      max = max({{ x }}, na.rm = TRUE)
+    )
+}
+group_summary(mtcars, cyl, mpg)
+```
+Allow `group_summary()` to take two grouping variables. 
+
+Option 1: add another grouping argument
+
+```{r}
+# three number summary of a column by a grouping variable
+group_summary <- function(df, grp1, grp2, x) {
+  df %>% 
+    group_by({{ grp1 }}, {{ grp2 }}) %>% 
+    summarise(
+      n = n(),
+      min = min({{ x }}, na.rm = TRUE),
+      max = max({{ x }}, na.rm = TRUE)
+    )
+}
+group_summary(mtcars, mpg, cyl, gear)
+```
+
+Option 2: Use the dots `...`
+
+```{r}
+# three number summary of a column by a grouping variable
+group_summary <- function(df, x, ...) {
+  df %>% 
+    group_by(...) %>% 
+    summarise(
+      n = n(),
+      min = min({{ x }}, na.rm = TRUE),
+      max = max({{ x }}, na.rm = TRUE)
+    )
+}
+group_summary(mtcars, mpg, cyl, gear)
+```
+Option 3: Use `across()` to allow user to use tidyselect semantics
+```{r}
+# three number summary of a column by a grouping variable
+group_summary <- function(df, grp, x) {
+  df %>% 
+    group_by(across({{ grp }})) %>% 
+    summarise(
+      n = n(),
+      min = min({{ x }}, na.rm = TRUE),
+      max = max({{ x }}, na.rm = TRUE)
+    )
+}
+group_summary(mtcars, c(cyl, gear), mpg)
+group_summary(mtcars, starts_with("c"), mpg)
+```
+
+
+---
+
+### Data Masking - Summary
+
+dplyr: `arrange()`, `filter()`, `group_by()`, `mutate()`, and `summarise()`  
+ggplot2’s: `aes()`, `var()`
+
+Arguments that use data masking 
+will be indicated in docs with `<data-masking>`.
+
+* You (as developer) know the data-variable is `x`: `arrange(df, .data$x)`
+* Name of data-variable is a **character string** in an env-variable `x`: 
+`arrange(df, .data[[x]])`
+* Data-variable is passed as a function argument `x`: `arrange(df, {{ x }})`
+
+Remember `...` can be passed through - no special treatment required.
+
+## Tidy Selection 
+
+The other half of tidy evaluation, used in functions like:
+`select()`, `rename()`, `pivot_longer()` ...
+When working with columns.
+
+Implemented with tidyselect package: 
+choose variables based on their position, name, or type.
+
+Run into similar problem with indirection;
+```{r}
+my_select <- function(df, x) {
+  df %>% 
+    select(x)
+}
+my_select(mtcars, cyl)
+```
+<!-- Example fixed with embracing -->
+```{r}
+my_select <- function(df, x) {
+  df %>% 
+    select({{ x }})
+}
+my_select(mtcars, cyl)
+my_select(mtcars, c(cyl, wt))
+```
+
+* `all_of()` `any_of()` work with character strings
+* `across()` uses tidyselect semantics and can be combined with `{{`
+
+## Questions
+
+Can we please learn a bit more about the benefit of `.data$cyl` vs. `mtcars$cyl`? 
+
+`.data` will always refer to active data, e.g. `mtcars$cyl` wouldn't work here:
+```{r}
+cyl_plot <- function(){
+  mtcars %>% 
+    filter(gear == 4) %>% 
+    ggplot() +
+    geom_bar(aes(.data$cyl)) +   
+    coord_flip()
+}
+cyl_plot()
+```
+
+## Putting it all together
+
+Get this package:
+```{r}
+usethis::create_from_github("cwickham/tidytest", fork = FALSE)
+```
+
+It has our fixed `cyl_sum()` function in it, 
+but it isn't passing `check()`.
+
+Your task: Get this package passing `check()`.
+
+Hints:
+* You'll need to make sure add the dplyr dependencies
+* `.data` is from `rlang`, use
+    ```{r}
+    #' @importFrom rlang .data`
+    ```
+    and don't forget to add the dependency to your DESCRIPTION with
+`use_package("rlang")`
+
+
+
