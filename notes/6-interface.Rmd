@@ -247,3 +247,82 @@ Which of `sample()`'s arguments are required?
 
 2 min
 
+Simple rule:
+* Required <-> no default
+* Optional <-> has default
+
+### Hidden
+
+Avoid hidden arguments. 
+
+Hidden arguments: when a function returns *surprisingly* different results on the same input. 
+
+```{r}
+tolower("I")
+sort(letters)
+```
+
+```{r}
+str_to_lower()
+str_to_lower("I", locale = "tr")
+```
+```{r}
+rnorm(1)
+Sys.time()
+```
+Avoid hidden arguments. 
+
+### Enums
+
+```{r}
+str_trim()
+str_trunc()
+rank()
+```
+
+Use if you have an arugment that takes only a small set of possible values.
+
+*Key*: use `match.arg()`
+
+```{r}
+x <- function(animal = c("lion", "sloth")) {
+  animal <- match.arg(animal)
+  animal
+}
+```
+
+### Independence 
+
+Keep argument independent. 
+
+Arguments are dependent if the possibilities for one depend on the values of another. 
+
+```{r eval=FALSE}
+# Can supply times and each, unless times is a vector
+rep(1:3, times = 2, each = 3)
+rep(1:3, times = 1:3, each = 3)
+```
+`times` and `each` are dependent.
+
+Keep arguments independent. Having dependent arguments is more confusing for you, and it's also more confusing for the user. 
+
+https://design.tidyverse.org/args-independence.html#how-do-i-remediate
+
+### Recap
+
+Names
+* Use verbs.
+* Be clear and concise.
+* Think about how functions are told apart.
+* Use prefixes and suffixes.
+
+Arguments
+* Data, descriptors, details. They should go in that order.
+* Avoid hidden arguments
+* Required arguments don't have defaults. Optional ones do.
+* Keep arguments independent. 
+* Use enums for arguments that can only take on one of several values.
+
+# End-of-day survey
+
+Please fill out on sli.do.
