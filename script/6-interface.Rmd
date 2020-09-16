@@ -1,9 +1,21 @@
+# Notes
+
+bit.ly/build-tt
+
+`notes/6-interface.Rmd`
+
 # Function interface
 
-Goal for today is focus on the interface of functions, because I think this is an important change in mindset when you start developing functions. You have to think how they fit together into a greater whole.
+## Plan
 
-* interface = outside
-* implementation = inside
+* Intro to interface
+* Names
+* Arguments
+
+How do you make a package (functions) that is easy and pleasant to use?
+
+* Interface: outside of the function. All the parts of a function that the user will see and interact with. 
+* Implementation: inside of the function. specifics of how the algorithm is carried out. 
 
 More: <http://design.tidyverse.org/>
 
@@ -28,7 +40,7 @@ Timed: 3 minutes
 library(stringr)
 ```
 
-## base R vs stringr
+## Case study:: base R string vs. stringr functions
 
 Base R string functions aren't bad or wrong! All functions can be improved, and it's useful to critique existing work.
 
@@ -36,9 +48,11 @@ Base R string functions aren't bad or wrong! All functions can be improved, and 
 
 10 minutes
 
-Discuss:
-* What are some of the challenges of the base string functions? 
-  * Think particularly about names, arguments, and outputs.
+<!-- commit code -->
+
+Discussion:
+* Critique the interface of the base R string functions.
+  * Think particularly about names and arguments. 
 
 Then:
 * Answer the sli.do questions
@@ -48,43 +62,47 @@ strsplit(x, split, ...)
 grep(pattern, x, value = FALSE, ...)
 grepl(pattern, x, ...)
 sub(pattern, replacement, x, ...)
-gsub(pattern, replacement, x, ...)
 regexpr(pattern, text, ...)
 gregexpr(pattern, text, ...)
-regexec(pattern, text, ...)
 substr(x, start, stop)
-nchar(x, type, ...)
 ```
 
 * Names
   * No common theme. 
   * No common prefix. 
-  * Names are concise, but confusing. (who is Greg?)
-  * Difficult to remember, and distinguish.
-  
-* Arguments
-  * Argument names & order are not consistent
-  * Data isn’t the first argument (2nd or 3rd). 
-  * Sometimes `text`, sometimes `x`. 
-  * Not always independent.
+  * Names are confusing, although they are concise. 
+  * Difficult to remember and distinguish.
 
-* Outputs:
-  * Can’t feed output of `gregexpr()` into `substr()`
+* Arguments
+  * Argument names aren't consistent
+  * Order isn't consistent
+  
+Possibility for error, possiblity for confusion and frustration.
+
+<!--11:00-->
 
 ## Names
 
 The name of a function is a very important part of its interface.
 
-* Helps you remember functionality.
-* Need name (or part of a name) to look up.
+* First thing you interact with.
+* First clue about what the function does.
+* Remembering what function does what.
+* Looking up docs. 
 
-### Function names should be verbs (usually)
+Function names:
 
-Because they _do_ something
+* Should probably be verbs.
+* Should be clear and concise. 
+* Should distinguish a function from related functions.
 
 ### Your Turn: Breakout rooms
 
-Match the following functions and arguments to their stringr equivalents. What are some issues with the base functions? What are some issues with the stringr equivalents?
+<!-- commit code -->
+
+1. Match the following functions and arguments to their stringr equivalents.
+2. What are some issues with the base R function names?
+3. What are some issues with the stringr function names?
 
 ```{r}
 grepl(value = TRUE) 
@@ -106,6 +124,26 @@ strsplit()          # -> str_split()
 regexpr()           # -> str_locate()
 ```
 
+Evaluate on our three guidelines.
+
+Base R function names:
+* Are not really verbs. 
+* Are concise, but they aren't very clear.
+* Difficult to differentiate the functions.
+
+Stringr function names:
+* Are verbs (for the most part)
+* Clear and concise (for the most part). Follow a common pattern. 
+* Somewhat easy to differentiate them. 
+
+str_detect(), str_which(), and str_subset(). All the English words have pretty much the same meaning.
+
+```{r}
+str_detect(c("apple", "pluot", "banana"), "a")
+str_which(c("apple", "pluot", "banana"), "a")
+str_subset(c("apple", "pluot", "banana"), "a")
+```
+
 Some problems: what's the difference between `str_detect()`, `str_which()`, and `str_subset()`? Differ primarily in their output type. English verbs too similar:
 
 ```{r}
@@ -113,14 +151,6 @@ str_detect() # str_something_lgl() ?
 str_which()  # str_something_int() ?
 str_subset() # str_something_chr() ?
 ```
-
-Another way to think about it is that some function work with chararacters in a string, which others work with strings in a character vector.
-
-```{r}
-str_locate_vec()
-str_locate_str()
-```
-
 
 Verbs aren't always essential. Nouns can work when you're building up objects.
 
@@ -137,12 +167,17 @@ coord_fixed()
 Nouns can also work if you're extracting a property:
 
 ```{r, eval = FALSE}
+length()
 str_length()
+
+# get_length()
+# str_get_length()
 ```
 
 And sometimes there just isn't a good verb:
 
 ```{r}
+# could do str_lower(), but then not clear if detecting or converting
 str_to_lower()
 str_to_upper()
 ```
@@ -150,7 +185,7 @@ str_to_upper()
 Function names:
 
 * Should probably be verbs.
-* Should be clear and concise. 
+* Should be clear and concise. Try to eliminate "filler" words. 
 * Should distinguish a function from related functions.
 
 
@@ -166,6 +201,7 @@ Function names:
     * `str_replace()` and `str_replace_all()`
     * `str_split()` and `str_split_fixed()`
 
+<!--
 When should you make multiple functions rather than using an argument? If it changes the _type_ of output, always make it a function. If the argument would interact with other arguments, probably should be a function.  
 
 If there are many options, an argument probably better. Sometimes only obvious in retrospect.
@@ -187,6 +223,8 @@ str_capitalise(x, to = "sentence")
 str_capitalize() # ?
 ```
 
+-->
+
 ### Guidelines for function names
 
 Function names should:
@@ -202,38 +240,30 @@ Function names should:
 * Try a thesaurus.
 * Choose dense words.
 * Edit down. There is other context besides just the function name. (i.e., mutate(), not mutate_data_frame())
-* If you're stuck, try writing down exactly what you're function does. (half-truth: unclear writing is unclear thinking)
+* If you're stuck, try writing down exactly what you're function does. 
 * Consume good function names.
 
-<!--1 hour-->
+<!--11:30-->
 
 ## Arguments
 
 * Types
-* Required arguments
-* Hidden arguments
-* Enumms
-* Keeping arguments independent
+* Properties of arguments:
+  * Required / not required
+  * Hidden / not hidden
+  * Enumerated / not enumerated
+  * Independent / dependent
 
-## Types
+### Your turn: Poll
 
-Arguments can be:
+<!-- commit code -->
 
-* Required / not required
-* Hidden / not hidden
-* Enumerated / not enumerated
-* Independent / dependent
-
-### Your turn: Breakout rooms
-
-Divide the arguments of the following functions into groups. For each group, determine whether the arguments are required or optional. 
+Divide the arguments of the following functions into groups. 
 
 ```{r}
 strsplit(x, split, fixed = TRUE)
 grepl(pattern, x, fixed = TRUE, ignore.case = TRUE)
-gsub(pattern, replacement, x, fixed = TRUE, ignore.case = TRUE)
 gregexpr(pattern, text, fixed = TRUE)
-substr(x, start, stop)
 ```
 
 ### Data, descriptors, and details
@@ -243,12 +273,12 @@ substr(x, start, stop)
   * Primary vector of data. Often called `x` or `data`.
   * Required. Controls shape/type of output
 
-* Descriptors: `pattern`, `replacement`, `start`, `stop`. 
+* Descriptors: `pattern`, `split` 
   
   * Essential features of the operation to be carried out.
   * Required. 
 
-* Details: `fixed`, `ignore.case`, `perl`, `useBytes`, etc.
+* Details: `fixed`, `ignore.case`
   
   * Additional details. 
   * Optional.
@@ -263,13 +293,15 @@ Order:
 Benefits:
 
 * Works with pipe.
-* Ordered from most important to least important
+* Ordered from most important to least important. 
 * Required arguments come before optional. 
 * Forces details to be named.
 
 ### Required
 
 #### Your turn: Poll
+
+<!-- commit code -->
 
 Which of `sample()`'s arguments are required?
 
@@ -292,11 +324,8 @@ sort(letters)
 
 ```{r}
 str_to_lower("I")
+# dotless i
 str_to_lower("I", locale = "tr")
-
-# https://en.wikipedia.org/wiki/Swedish_alphabet
-str_sort(c("a", "o", "z", "å", "ø"))
-str_sort(c("a", "o", "z", "å", "ø"), locale = "se")
 
 # readr::locale()
 ```
@@ -321,6 +350,13 @@ Use if you have an argument that takes a small set of possible values.
 
 *Key*: use `match.arg()`
 
+```{r}
+x <- function(animal = c("lion", "sloth")) {
+  animal <- match.arg(animal)
+  animal
+}
+```
+
 ### Independence
 
 Arguments are dependent if the possibilities for one depends on the values of another.
@@ -335,28 +371,20 @@ Keep arguments independent. More confusing for you, and more confusing for the u
 
 https://design.tidyverse.org/args-independence.html#how-do-i-remediate
 
-### Type stability
+### Recap
 
-Starting point: a function should always return the same type. 
+Names:
+* Use verbs.
+* Be clear and concise.
+* Think about how functions are told apart.
+* Use prefixes and suffixes.
 
-```{r}
-rnorm(n = 1)
-str_trim(" abc ")
-```
-
-#### Your turn: Poll
-
-2 min
-
-Does `sum()` always return the same type?
-
-More nuanced: a function's output type should be easy to predict based on it's inputs.
-
-```{r}
-if_else()
-c()
-sum()
-```
+Arguments:
+* Data, descriptors, details
+* Avoid hidden arguments
+* Required arguments don't have defaults. Optional ones do.
+* Keep arguments independent. 
+* Use enums for arguments that can only take on one of several values. 
 
 # End-of-day survey
 
