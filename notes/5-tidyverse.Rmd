@@ -1,0 +1,9 @@
+# Tidyverse in packages
+
+* Tidy evaluation
+  * Data masking
+  * Tidy select
+* How to refer to functions (recap)
+
+Draws heavily on <https://dplyr.tidyverse.org/articles/programming.html>
+
