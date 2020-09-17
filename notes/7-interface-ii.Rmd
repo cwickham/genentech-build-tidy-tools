@@ -174,3 +174,36 @@ Asnwer in Slido, once you are done with both questions:
 Is `ifelse()` type stable?
 
 (5mins)
+
+No, `ifelse()` is not type-stable:
+```{r}
+vec_ptype_show(ifelse(TRUE, 1, "no"))
+vec_ptype_show(ifelse(FALSE, 1, "no"))
+vec_ptype_show(ifelse(NA, 1, "no"))
+vec_ptype_show(NA)
+vec_ptype_show(TRUE)
+```
+
+Not a problem for type stability, but does make it
+hard to predict output type:
+```{r}
+vec_ptype_show(ifelse(TRUE, factor("a"), factor("b")))
+vec_ptype_show(ifelse(TRUE, Sys.Date(), Sys.Date() + 1))
+```
+
+* What is the rule for the output type of `ifelse()`? (Hint: `?ifelse()`) 
+
+It is complicated.  
+
+### A better `ifelse()`
+
+**Breakout Room** (5mins)
+
+Brainstorm: 
+
+* What conditions would you put on the types of the input?
+
+* What rule would you use to determine the types of the output?
+
+* (Optional) How should the size of the output be determined?
+
