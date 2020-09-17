@@ -143,18 +143,132 @@ f(1)
 #> 100
 ```
 
+Slido:
 What needs to happen inside `new_secret()` to make `f` an
 object of class `"secret"`?
 
+```{r}
+new_secret <- function(f){
+  stopifnot(is.function(f))
+  structure(f, class = "secret")
+}
 
+f <- function(x) x * 100
+f <- new_secret(f)
+f(1)
+```
 
+We want objects of class `secret` to have a special 
+print method.  What function do we need to define?
 
+```{r}
+f
+print.secret <- function(x, ...) {
+  cat("HIDDEN\n")
+}
+f
+s3_dispatch(print(f))
+```
 
+```{r}
+f <- function(x) x * 100
+f <- new_secret(f)
+f
+#> HIDDEN
+f(1)
+#> 100
+```
 
+## Case Studies
+
+**New vector data type:** Year-Month in tsibble
+
+```{r}
+# install.packages("tsibble")
+library(tsibble)
+x <- seq(as.Date("2016-01-01"), as.Date("2016-12-31"), by = "1 month")
+year_mon <- yearmonth(x)
+year_mon
+tibble(year_mon = year_mon)
+typeof(year_mon)
+attributes(year_mon)
+sloop::s3_dispatch(print(year_mon))
+```
+
+```{r}
+year_mon
+year_mon + 1
+```
+
+**Complicated object:** column specification from readr
+```{r}
+library(tidyverse)
+data <- read_csv(readr_example("mtcars.csv"))
+View(spec(data))
+spec(data)
+s3_dispatch(print(spec(data)))
+# most of the work happens in format.col_spec 
+s3_get_method("print.col_spec")
+s3_get_method("format.col_spec")
+```
+**Acts like a tibble**, looks like something else:
+```{r}
+# devtools::install_github("ropensci/skimr")
+library(skimr)
+dplyr::starwars %>% skim()
+```
+
+```{r}
+dplyr::starwars %>% 
+  skim() %>% 
+  View()
+dplyr::starwars %>% 
+  skim() %>% 
+  filter(n_missing > 0)
+```
 
 ## What would I make my own generic?
 
+We want a `bizarro()` function, that takes input and "bizarros" it:
+```{r}
+bizarro("abc")
+#> [1] "cba"
+bizarro(1)
+#> [1] -1
+bizarro(c(TRUE, FALSE))
+#> [1] FALSE TRUE
+```
 
+```{r}
+str_reverse <- function(x) {
+  purrr::map_chr(stringr::str_split(x, ""), 
+    ~ stringr::str_flatten(rev(.x))  
+  )
+}
+```
 
+Without a generic, `bizzaro()` function needs a ton of `if` clauses:
+```{r}
+bizarro <- function(x) {
+  if (is.character(x)) {
+    str_reverse(x)
+  } else if (is.numeric(x)) {
+    -x
+  } else if (is.logical(x)) {
+    !x
+  } else {
+    stop(
+      "Don't know how to make bizzaro <", class(x)[[1]], ">", 
+      call. = FALSE)
+  }
+}
+```
 
+## Conclusions
 
+* Consider implementing your own S3 class if:
+    * You return a list with a specific structure from many functions
+    * You want a concise `print()` method for a complicated object
+    
+* Consider implementing your own generic if:
+    * you want function behaviour to depend on the input type
