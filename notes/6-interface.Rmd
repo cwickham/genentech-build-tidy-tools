@@ -1,0 +1,328 @@
+# Notes
+
+bit.ly/build-tt
+
+`notes/6-interface.Rmd`
+
+# Function interface
+
+## Plan
+
+* Intro to function interface
+*
+*
+
+Goal: How do you make a package (functions) that is easy and pleasant to use?
+
+* Interface: outside of the function. All the parts of a function that the user will see and interact with.
+* Implementation: inside of the function. Specifics of how your algorithm is carried out.
+
+Draws from: <http://design.tidyverse.org/>
+
+## Your Turn: Poll
+
+What are the properties of a function that define its interface? (Hint: There are at least 9!)
+
+Time: 3 minutes
+
+* Function name 
+* Arguments (inputs)
+  * Name
+  * Types
+  * Defaults 
+* Output 
+* Errors
+* Side effects
+  * Copy things to clipboard
+  * Messages 
+  * Save/write files
+  
+## Case study: base R string functions vs. stringr functions
+
+Base R string functions are not wrong or bad! All functions can be improved, and it's useful to critique existing work. 
+
+### Your Turn: Breakout rooms
+
+Time: 10 minutes
+
+Discussion:
+* Critique the interface of the base R string functions.
+  * Think particularly about names and arguments. 
+
+Then:
+* Answer the sli.do questions
+
+```{r, eval = FALSE}
+strsplit(x, split, ...)
+grep(pattern, x, value = FALSE, ...)
+grepl(pattern, x, ...)
+sub(pattern, replacement, x, ...)
+regexpr(pattern, text, ...)
+gregexpr(pattern, text, ...)
+substr(x, start, stop)
+```
+
+* Names
+  * Kind of cryptic. Confusing. They are concise. 
+  * No common theme. No common prefix. 
+  * Difficult to distinguish. Hard to remember their differences. 
+
+* Arguments
+  * Names aren't consistent (sometimes `x`, sometimes `text`)
+  * Order isn't consistent
+  * Confusing
+  
+Possibility for error, also possibility for frustration and confusion. 
+
+## Names
+
+The name of a function a very important part of the interface.
+
+* The first thing you interact with.
+* The clue about what the function does. 
+* Key to remembering what the function is supposed to do. 
+* Looking up documentation. 
+
+Guidelines: Function names should:
+
+* Probably be verbs. 
+* Be clear and concise. 
+* Distinguish one function from related functions. 
+
+### Your Turn: Breakout rooms
+
+1. Match the following functions and arguments to their stringr equivalents.
+2. What are some issues with the base R function names?
+3. What are some issues with the stringr function names?
+
+Evaluate on our three guidelines. 
+
+Time: 8 minutes
+
+```{r}
+grepl(value = TRUE) # -> str_subset()
+grep()              # -> str_which() 
+grepl()             # -> str_detect()
+sub()               # -> str_replace()
+gsub()              # -> str_replace_all()
+strsplit()          # -> str_split()
+regexpr()           # -> str_locate()       
+```
+
+Base R function names:
+* Not really verbs.
+* Are concise, but they aren't very clear.
+* Difficult to differentiate them. 
+
+Stringr function names:
+* Are verbs (for the most part).
+* Clear and concise (for the part). Follow a common pattern, including helpful prefix.
+* Somewhat easy to differentiate them. 
+
+`str_detect()`, `str_which()`, and `str_subset()`. All the English words (detect, which, subset) have pretty similar meanings. 
+
+```{r}
+str_detect(c("apple", "pluot", "banana"), "a")
+str_which(c("apple", "pluot", "banana"), "a")
+str_subset(c("apple", "pluot", "banana"), "a")
+```
+What's the difference between `str_detect()`, `str_which()`, and `str_subset()`? Main difference is in their output type. 
+
+```{r}
+str_detect() # str_something_lgl() ?
+str_which()  # str_something_int() ?
+str_subset() # str_something_chr() ?
+```
+
+Verbs aren't always necessary. There are time that nouns can be a good idea. 
+
+1. For example, when you're building up objects.
+
+```{r}
+# ggplot2 functions
+
+library(ggplot2)
+
+ggplot()
+geom_histogram()
+scale_x_discrete()
+coord_flip()
+```
+
+2. When you're extracting a property.
+
+```{r}
+length()
+str_length()
+
+# get_length()
+# str_get_length()
+```
+
+Guidelines: Function names should:
+
+* Probably be verbs. 
+* Be clear and concise. 
+* Distinguish one function from related functions. 
+
+### Prefixes and suffixes
+
+* Use prefixes to group together related functions.
+  Advantage: autocomplete
+* Use suffixes for variations on a theme.
+  * `str_replace()` and `str_replace_all()`
+* Decide between `snake_case` and `camelCase`. Pick one and be consistent. 
+
+### Guidelines for function names
+
+Function names should:
+* Probably be verbs.
+* Be clear and concise. 
+* Distinguish a function from related functions.
+* (if relevant) use prefixes to group together related functions.
+* (if relevant) use suffixes to identify functions that are variants of each other.
+
+### Advice
+
+* Try a thesaurus. 
+* Choose dense words. 
+* Edit down. There is other context besides just the function name. (`mutate()` doesn't need to be `mutate_data_frame()`).
+* If you're stuck, try writing down exactly what your function does. 
+* Consume good function names. 
+
+## Arguments
+
+* Types (groups)
+* Properties of arguments:
+  * Required / not required
+  * Hidden / not hidden
+  * Enumerated / not enumerated
+  * Independent / dependent
+
+### Your turn: Poll
+
+Divide the arguments of the following functions into groups. 
+
+```{r}
+strsplit(x, split, fixed = TRUE)
+grepl(pattern, x, fixed = TRUE, ignore.case = TRUE)
+gregexpr(pattern, text, fixed = TRUE)
+```
+
+### Data, descriptors, and details
+
+* Data: `x` and `text`
+
+  * Primary vector of data. 
+  * Required. 
+
+* Descriptors: `pattern` and `split`
+
+  * Essential feature of the operation to be carried out. 
+  * Required.
+  
+* Details: `fixed` and `ignore.case`
+
+  * Optional. 
+  * Additional details. 
+  
+Order:
+
+1. Data
+2. Descriptors 
+(3. `...`)
+4. Details
+
+Benefits:
+
+* Works with the pipe ( %>% )
+* Ordered from most important to least
+* Forces details to be named
+
+### Required
+
+#### Your turn: Poll
+
+Which of `sample()`'s arguments are required?
+
+2 min
+
+Simple rule:
+* Required <-> no default
+* Optional <-> has default
+
+### Hidden
+
+Avoid hidden arguments. 
+
+Hidden arguments: when a function returns *surprisingly* different results on the same input. 
+
+```{r}
+tolower("I")
+sort(letters)
+```
+
+```{r}
+str_to_lower()
+str_to_lower("I", locale = "tr")
+```
+```{r}
+rnorm(1)
+Sys.time()
+```
+Avoid hidden arguments. 
+
+### Enums
+
+```{r}
+str_trim()
+str_trunc()
+rank()
+```
+
+Use if you have an arugment that takes only a small set of possible values.
+
+*Key*: use `match.arg()`
+
+```{r}
+x <- function(animal = c("lion", "sloth")) {
+  animal <- match.arg(animal)
+  animal
+}
+```
+
+### Independence 
+
+Keep argument independent. 
+
+Arguments are dependent if the possibilities for one depend on the values of another. 
+
+```{r eval=FALSE}
+# Can supply times and each, unless times is a vector
+rep(1:3, times = 2, each = 3)
+rep(1:3, times = 1:3, each = 3)
+```
+`times` and `each` are dependent.
+
+Keep arguments independent. Having dependent arguments is more confusing for you, and it's also more confusing for the user. 
+
+https://design.tidyverse.org/args-independence.html#how-do-i-remediate
+
+### Recap
+
+Names
+* Use verbs.
+* Be clear and concise.
+* Think about how functions are told apart.
+* Use prefixes and suffixes.
+
+Arguments
+* Data, descriptors, details. They should go in that order.
+* Avoid hidden arguments
+* Required arguments don't have defaults. Optional ones do.
+* Keep arguments independent. 
+* Use enums for arguments that can only take on one of several values.
+
+# End-of-day survey
+
+Please fill out on sli.do.
