@@ -207,3 +207,67 @@ Brainstorm:
 
 * (Optional) How should the size of the output be determined?
 
+### One example: dplyr::if_else()
+
+`dplyr::if_else(condition, true, false)`:
+
+* `condition` is logical, `true` and `false` must be the same type.
+* output type is the same and `true` and `false`
+
+But, the condition on same types can be annoying:
+```{r}
+dplyr::if_else(TRUE, "true", NA)
+```
+
+### Another example from vctrs docs 
+
+https://vctrs.r-lib.org/articles/stability.html#ifelse
+
+* Input: The first argument must be logical.
+* Output type: the common type between `yes` and `no`.  
+
+```{r}
+if_else <- function(test, yes, no) {
+  vec_assert(test, logical())
+  c(yes, no) %<-% vec_cast_common(yes, no)
+  c(test, yes, no) %<-% vec_recycle_common(test, yes, no)
+  out <- vec_init(yes, vec_size(yes))
+  vec_slice(out, test) <- vec_slice(yes, test)
+  vec_slice(out, !test) <- vec_slice(no, !test)
+  out
+}
+```
+
+### Size stability
+
+A function is size-stable iff:
+
+You can predict the output size knowing only the input sizes, or 
+there is a single numeric input that specifies the output size.
+
+## Returning Multiple Outputs
+
+Same size: use a tibble, unless to work as input to other functions a matrix would be better.
+
+Different sizes: use a list, name the elements.  If you are returning that same thing from many functions, make an S3 class.
+
+## Returning No Outputs
+
+Functions called for their side effects:
+
+* Don't combine computation and side effects in a single function
+* Return object invisibly - use the function in pipes
+
+## Other Output Considerations
+
+* Output should feed easily into input
+
+## Recap
+
+* Your functions will be easier to reason about if 
+they are type-stable and size-stable
+
+* If you are returning multiple outputs, 
+choose a type that explicitly encodes important properties of the output.
+
+* Don't mix side effects with computation
