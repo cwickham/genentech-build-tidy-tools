@@ -119,17 +119,46 @@ to still allow people to use the function in a dplyr pipeline.
 
 ## Create a new class by adding the class attribute
 
+Let's practice by creating a new class based on functions,
+called `secret`.  Won't display body of function, i.e. useful when teaching.
+
 ```{r}
-new_foo <- function() {
-  x <- list()
-  class(x) <- "foo"
-  x
-}
-y <- new_foo()
-sloop::s3_dispatch(print(y))
+f <- function(x) x * 100
+f <- new_secret(f)
+f
+#> HIDDEN
+f(1)
+#> 100
 ```
 
+What needs to happen inside `new_secret()`?
+
+
+
+
+```{r}
+new_secret <- function(f) {
+  stopifnot(is.function(f))
+  structure(f, class = "secret")
+}
+```
+
+We want objects of class `secret` to have a special 
+print method.  What function do we need to define?
+
+* `print()`
+* `print.secret()`
+* `my_print()`
+* `print_secret()`
+
+slido.com #80875 
+passcode: tidytools
+
+
 Best practices at: https://adv-r.hadley.nz/s3.html#s3-classes
+```{r}
+sloop::s3_dispatch(print(y))
+```
 
 ## Create a new method by creating a function with a special name
 
@@ -137,13 +166,16 @@ Best practices at: https://adv-r.hadley.nz/s3.html#s3-classes
 Arguments must match generic.
 
 ```{r}
-print.foo <- function(x, ...) {
-  cat("Hello!\n")
-  invisible(x)
+print.secret <- function(x, ...) {
+  cat("HIDDEN\n")
 }
-sloop::s3_dispatch(print(y))
-print(y)
-y
+
+f <- function(x) x * 10
+f2 <- new_secret(f)
+f2
+#> HIDDEN
+f2(10)
+#> [1] 100
 ```
 
 ### Case studies
