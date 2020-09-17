@@ -52,7 +52,7 @@ devtools::dev_sitrep()
 To be prepared beyond Day 1, you’ll also need the following packages:
 
 ``` r
-install.packages(c("glue", "hexbin", "sloop", "usethis"))
+install.packages(c("glue", "hexbin", "skimr", "sloop", "tsibble", "usethis", "vctrs"))
 ```
 
 ``` r
@@ -487,14 +487,21 @@ hear you”)
       - Tidy evaluation:
         
           - [Programming with
-            dplyr](https://dplyr.tidyverse.org/dev/articles/programming.html)
+            dplyr](https://dplyr.tidyverse.org/articles/programming.html)
           - [Using ggplot2 in
-            packages](https://ggplot2.tidyverse.org/dev/articles/ggplot2-in-packages.html)
+            packages](https://ggplot2.tidyverse.org/articles/ggplot2-in-packages.html)
           - Only if you want/need the theory: [Metaprogramming in
             Advanced R](https://adv-r.hadley.nz/metaprogramming.html)
     
       - Object Oriented Programming / S3: [Object Oriented Programming
         in Advanced R](https://adv-r.hadley.nz/oo.html)
+
+  - General R programming:
+    
+      - [Advanced R](https://adv-r.hadley.nz/), in particular the
+        Foundations part
+      - [Programming notes from Data Challenge
+        Lab](https://dcl-prog.stanford.edu/)
 
 ## Overview
 
