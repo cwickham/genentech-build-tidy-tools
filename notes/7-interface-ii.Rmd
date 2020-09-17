@@ -1,1 +1,173 @@
-## Interface II
+## Interface II: Output
+
+Yesterday: names, inputs to functions
+
+Users see when they look at "Usage"
+
+Output:
+* return value +
+* errors or messages 
+* side effects (plot, printing on console, working with files on disk) +
+
+## Warmup 
+
+```{r, eval = FALSE}
+y <- sum(x)
+```
+
+If this code runs (without error), 
+
+* What can you tell me about `x`?
+* What can you tell me about `y`?
+
+slido.com #80875 
+passcode: tidytools
+
+* `x` is numeric (double and integers) or logical vector, no restriction on length
+* `y` is numeric, always of length 1
+
+```{r}
+x <- c(1L, 2L)
+y <- sum(x)
+typeof(y)
+```
+
+Two important features of input and outputs:
+* type 
+* length
+
+### Vector types
+
+Brainstorm: What are the eight most common types of vectors? I.e. things you might find as columns in a dataframe/tibble.
+
+logical, numeric, character, factor (ordered factor), date, 
+time, duration, list.
+
+(unimportant: raw, complex, integer/double distinction)
+
+### Function types
+
+The "type" of a function, is:
+the type of its inputs, and 
+the type of its output.
+
+* `mean()` 
+  * input: numeric vectors, logical vectors, Dates (?)
+  * output: numeric, Date(?), length 1
+  
+* `paste(collapse = "")`
+  * input: very few restrictions on type or length
+  * output: character string, length 1
+  
+```{r}
+x <- 3
+paste(1:3, c("3", "3"), collapse = "")
+```
+  
+### Types vs prototypes
+
+One way to think about type is `class()`:
+```{r}
+class(1:10)
+class(pi)
+class("x")
+```
+
+You lose important attributes
+```{r}
+class(Sys.Date())
+class(factor("a"))
+```
+
+```{r}
+class(matrix(1:4, ncol = 2))
+class(matrix(letters[1:4], ncol = 2))
+```
+
+Idea in the vctrs package: prototype (a more concrete defintion of type 
+useful for vector types)
+
+Miniature version (zero observation) of the vector:
+```{r}
+library(vctrs)
+vec_ptype(1:10)
+vec_ptype("hello")
+vec_ptype(Sys.Date())
+vec_ptype_show(Sys.Date()) # where is tz?(dates don't need timezone, duh?)
+
+# better time zone example
+class(Sys.time())
+vec_ptype_show(Sys.time()) 
+class(ISOdatetime(2020, 09, 17, 10, 59, 00, tz = "UTC"))
+vec_ptype_show(ISOdatetime(2020, 09, 17, 10, 59, 00, tz = "UTC")) 
+
+vec_ptype_show(matrix(1:4, ncol = 2))
+vec_ptype_show(matrix(letters[1:4], ncol = 2))
+```
+
+**Principle:** 
+
+Functions are easy to reason about when their
+output type is easily predicted from the input types.
+
+### Type stability
+
+(principle the tidyverse is now adhering too)
+
+**Type-stability**: Output type should depend only on the input types,
+not input values. 
+
+```{r}
+complicated_type <- function(x, y) {
+  if (x < 0) {
+    "negative"
+  } else {
+    if (is.na(y)) {
+      NA
+    } else {
+      1
+    }
+  }
+}
+```
+
+What happens if `x` is?
+* numeric, and negative output is character string
+* numeric, and positive, it depends, but either `NA_logical`, numeric
+
+```{r}
+x <- 1:3
+y <- 1:4
+vec_ptype(x)
+vec_ptype(y)
+vec_ptype(median(x))
+vec_ptype(median(y))
+```
+
+### `ifelse()`: Case study 
+
+```{r}
+x <- 1:4
+x
+ifelse(x < 2, yes = "small", no = "large")
+```
+
+
+Predict the type of the output for these calls to `ifelse()`:
+```{r}
+ifelse(TRUE, 1, "no")
+ifelse(FALSE, 1, "no")
+ifelse(NA, 1, "no")
+ifelse(TRUE, factor("a"), factor("b"))
+ifelse(TRUE, Sys.Date(), Sys.Date() + 1)
+```
+
+**Breakout Room**:
+
+Test your predictions with `vec_ptype_show()`
+
+Discuss: 
+* Is `ifelse()` type stable?
+* What is the rule for the output type of `ifelse()`? (Hint: `?ifelse()`)
+
+
