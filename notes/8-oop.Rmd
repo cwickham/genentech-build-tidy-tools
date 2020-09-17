@@ -1,0 +1,112 @@
+# Object Oriented Programming / S3
+
+* Base types - `typeof()` 
+* S3 - simplest thing that might work
+* S4 - complicated, stricter, Bioconductor
+* R6 - more similar to other OO languages
+
+Five chapters Advanced R Book
+
+## S3
+
+Simplest thing that might work
+You are alreaady working with s3 objects
+
+```{r}
+df <- data.frame()
+f <- factor()
+mod <- lm(mpg ~ cyl, data = mtcars)
+```
+
+You're alreayd working with S3 objects:
+```{r}
+library(sloop)
+otype(df)
+otype(f)
+otype(mod)
+```
+
+All S3 objects are built on a base type, get this with `typeof()`
+```{r}
+typeof(df)
+typeof(f)
+typeof(mod)
+```
+
+With the addition of attributes
+```{r}
+attributes(df)
+attributes(f)
+attributes(mod)
+```
+
+`class` attribute, that makes S3 work.
+
+## Why are S3 object useful?
+
+Function behaviour depend on the class:
+```{r}
+summary(mod)
+df <- data.frame(x = rnorm(10))
+summary(df)
+f <- factor(1:10)
+print(f)
+f
+summary(f)
+```
+
+No protection, you change the `class` attribute and now functions
+will act like the object is of the new class:
+```{r}
+f
+class(f) <- "Date"
+print(f)
+summary(f)
+```
+
+## Generics and methods 
+
+* `summary()`, `print()` are known as "generic functions" or "generics" for short = interface of the function.
+
+* specific function that is called, is called a "method" = implementation
+
+`sloop::ftype()`
+```{r}
+ftype(print)
+ftype(plot)
+ftype(mean)
+# Charlotte think abotu functions that aren't
+```
+
+A method follows a naming convention: {generic}.{class}
+`summary.lm` is the method of `summary()` for objects of class `lm`.
+
+`sloop::s3_dispatch()`
+```{r}
+o <- ordered(1:3)
+print(o) 
+class(o) # guess it's looking for `print.ordered()`
+s3_dispatch(print(o))
+```
+
+```{r}
+print.factor
+```
+## Your turn:
+
+Use `sloop::s3_dispatch()` to find the `print()` methods 
+that are called for integers and dates.
+
+```{r}
+x <- c(1L, 2L)
+y <- Sys.Date()
+```
+
+slido.com #80875 
+passcode: tidytools
+
+
+
+
+
+
