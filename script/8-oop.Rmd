@@ -10,7 +10,8 @@ Five chapters: <https://adv-r.hadley.nz>.
 
 ## S3
 
-The simplest thing that might possibly work. Built on top of regular R objects (atomic vectors, lists, functions, ...).
+The simplest thing that might possibly work. 
+Built on top of regular R objects (atomic vectors, lists, functions, ...).
 
 ```{r}
 df <- data.frame()
@@ -41,14 +42,24 @@ attributes(mod)
 
 Behaviour of a function can depend on the class:
 ```{r}
+x <- 1:10
+class(x)
+summary(x)
+
 x <- factor(1:10)
 class(x)
 typeof(x)
-print(x)
+summary(x)
+```
 
+But it there is no protection, you can change the `class` attribute
+and the behaviour will change:
+```{r}
 class(x) <- "Date"
 print(x)
 ```
+
+## Generics and methods
 
 * `print()` is called a **generic function** = interface
 * specific function is called **method** = implementation
@@ -58,41 +69,53 @@ To find out if a function is a generic: `sloop::ftype()`.
 The name of a method is just `{generic}.{class}`, and this is usually what you need to find help.
 
 The details can get a bit more complicated so you can use `sloop::s3_dispatch()` to find it:
-
 ```{r}
 library(sloop)
 s3_dispatch(print(ordered(1:3)))
 ```
 
-Then `s3_get_method()` to find the implementation.
+`=>`, `->` method exists and is found
+* exists but isn't used 
+Greyed out, doesn't exist
+
+Use `s3_get_method()` to find the implementation.
 
 ## Your turn:
 
-Find the implementation for the print functions for numerics and dates.
-
-`sloop::s3_dispatch()`, given a specific object, see how R found the method
-`sloop::s3_get_method()`, give a specific method, see the implementation
+Use `sloop::s3_dispatch()` to find the print methods 
+that are called for integers and dates.
 
 ```{r}
-x <- 1:10
+x <- c(1L, 2L)
 y <- Sys.Date()
-z <- Sys.time()
 ```
+
+slido.com #80875 
+passcode: tidytools
+
+---
 
 ```{r}
 sloop::s3_dispatch(print(x))
 sloop::s3_get_method(print.default)
 class(y)
-class(z)
-s3_dispatch(print(y))
-s3_get_method(print.Date)
-s3_dispatch(print(z))
-s3_get_method(print.POSIXct)
+sloop::s3_dispatch(print(y))
+sloop::s3_get_method(print.Date)
 ```
 
-If you are returning complicated objects, like a list, 
-creating a new S3 class, let's you write a nice 
-`print()` method to be easy on your users.
+Some examples where you might implement your own class in your package:
+
+* You are returning complicated objects, like a list.
+Let's you write a nice `print()` method,
+to be easy on your users. Or separate computation from the printing side effect.
+
+* You have a new data type you want to allow 
+people to put in the columns of a tibble and have
+a nice display.
+
+* You have a function that returns a tibble, 
+you want a pretty printing method, but you want
+to still allow people to use the function in a dplyr pipeline.
 
 ## Create a new class by adding the class attribute
 
@@ -123,7 +146,56 @@ print(y)
 y
 ```
 
-## Creating new generics
+### Case studies
+
+**New vector data type:** Year-Month in tsibble
+
+```{r}
+# install.packages("tsibble")
+library(tsibble)
+x <- seq(as.Date("2016-01-01"), as.Date("2016-12-31"), by = "1 month")
+year_mon <- yearmonth(x)
+year_mon
+tibble(year_mon = year_mon)
+typeof(year_mon)
+attributes(year_mon)
+sloop::s3_dispatch(print(year_mon))
+```
+
+```{r}
+year_mon
+year_mon + 1
+```
+
+**Complicated object:** column specification from readr
+```{r}
+data <- read_csv(readr_example("mtcars.csv"))
+View(spec(data))
+spec(data)
+
+s3_dispatch(print(spec(data)))
+# most of the work happens in format.col_spec 
+s3_get_method("print.col_spec")
+s3_get_method("format.col_spec")
+```
+
+**Acts like a tibble**, looks like something else:
+```{r}
+# devtools::install_github("ropensci/skimr")
+library(skimr)
+dplyr::starwars %>% skim()
+```
+
+```{r}
+dplyr::starwars %>% 
+  skim() %>% 
+  View()
+dplyr::starwars %>% 
+  skim() %>% 
+  filter(n_missing > 0)
+```
+
+## Creating new generics: Motivation
 
 We want a `bizarro()` function, that takes input and "bizarros" it:
 ```{r}
@@ -162,7 +234,9 @@ bizarro <- function(x) {
 }
 ```
 
-Much better to create a `bizzaro` generic, then implement methods:
+Much better to create a `bizzaro` generic, then implement methods.
+
+In interest of time skip rest of generics section.
 
 * `create_package("~/desktop/bizzaro")`
 * `use_mit_license()`
@@ -181,8 +255,8 @@ bizarro.character <- function(x) {
 }
 
 str_reverse <- function(x) {
-  purrr::map_chr(stringr::str_split(x, ""), 
-    ~ stringr::str_flatten(rev(.x))  
+  purrr::map_chr(stringr::str_split(x, ""),
+    ~ stringr::str_flatten(rev(.x))
   )
 }
 ```
@@ -199,9 +273,9 @@ Finish that? Write some documentation and some basic tests. Get check passing.
 ```{r}
 bizarro.default <- function(x) {
   stop(
-   "Don't know how to make bizzaro <", 
-   class(x)[[1]], ">", 
-   call. = FALSE 
+   "Don't know how to make bizzaro <",
+   class(x)[[1]], ">",
+   call. = FALSE
   )
 }
 ```
@@ -245,8 +319,12 @@ bizarro.factor <- function(x) {
 }
 ```
 
-## Conclusions?
+## Conclusions
 
-Making your S3 vectors display nicley in a tibble
-https://vctrs.r-lib.org/articles/pillar.html
-
+* Consider implementing your own S3 class if:
+    * You return a list with a specific structure from many functions
+    * You want a concise `print()` method for a complicated object
+    
+* Consider implementing your own generic if:
+    * you want function behaviour to depend on the input type
+    

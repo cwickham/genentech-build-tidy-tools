@@ -1,15 +1,12 @@
 # Interface Part II: Output
 
 In Interface I, talked about the parts of the interface that are 
-Visible from the function signature (e.g what you see in Help under "Usage"): 
+Visible from the function signature 
+(e.g what you see in Help under "Usage"): 
 names and arguments/inputs.
 
 Now, focus on the things that come out of a function: 
 output, side effects and communication with the user.
-
-```{r}
-library(stringr)
-```
 
 * Type stability & Size stability
 * Multiple outputs
@@ -28,7 +25,8 @@ If this code runs (without error),
 * What can you tell me about `x`?
 * What can you tell me about `y`?
 
-Open ended poll
+slido.com #80875 
+passcode: tidytools
 
 ---
 
@@ -44,7 +42,7 @@ Two important properties: type and size.
 
 Today I'm going to focus on functions that work with vectors, because this covers most functions  that you might encounter in a data analysis. 
 
-*Breakout Room* Brainstorm: What are the eight most common types of vectors? I.e. things you might find as columns in a dataframe/tibble.
+*Poll* Brainstorm: What are the eight most common types of vectors? I.e. things you might find as columns in a dataframe/tibble.
 
 ---
 
@@ -81,9 +79,7 @@ Can you describe the type of these functions?
 
 ### Types vs prototypes
 
-`class()` is one way to think about type, 
-but it isn't always that useful bec:
-
+`class()` is one way to think about type:
 ```{r}
 class(1:10)
 class(pi)
@@ -160,12 +156,13 @@ ifelse(TRUE, factor("a"), factor("b"))
 ifelse(TRUE, Sys.Date(), Sys.Date() + 1)
 ```
 
+**Breakout Room**:
+
 Test your predictions with `vec_ptype_show()`
 
-Is `ifelse()` type stable?
-
-Take a look at the help for `ifelse()`.
-What is the rule for the output type of `ifelse()`?
+Discuss: 
+* Is `ifelse()` type stable?
+* What is the rule for the output type of `ifelse()`? (Hint: `?ifelse()`)
 
 ---
 ```{r}
@@ -183,8 +180,8 @@ vec_ptype_show(NA)
 vec_ptype_show(TRUE)
 ```
 
-`ifelse()` is not type stable, since the output type depends on the values 
-in `test`
+`ifelse()` is not type stable, 
+since the output type depends on the values in `test`
 
 ```{r}
 ?ifelse
@@ -194,7 +191,9 @@ Basically, it's complicated.
 
 ### A better `ifelse()`
 
-Breakout Room Brainstorm: 
+**Breakout Room**
+
+Brainstorm: 
 
 * What conditions would you put on the types of the input?
 
@@ -261,6 +260,28 @@ there is a single numeric input that specifies the output size.
 Both size-stable and type-stable are examples of invariants: 
 simple statements that describe the output of a function.
 
+## Returning Multiple Outputs
+
+**Breakout room**
+
+Discuss:
+
+* Why does `str_locate()` return a matrix and not two vectors?
+* Why does `str_locate()` return a matrix and not a data frame? 
+* Why can `str_locate()` return a matrix while `str_locale_all()` has to return a list? 
+
+```{r}
+library(stringr)
+x <- c(NA, "", "x", "y", "yy")
+str_locate(x, "y")
+str_locate_all(x, "y")
+```
+---
+
+Same size: use a tibble, unless to work as input to other functions a matrix would be better.
+
+Different sizes: use a list, name the elements.  If you are returning that same thing from many functions, make an S3 class.
+
 ## Returning No Outputs
 
 Usually a function that is called for its side effects:
@@ -296,26 +317,35 @@ mtcars %>%
   write_tsv("mtcars.tsv")
 ```
 
-## Returning Multiple Outputs
+Example from earlier in the workshop, `fdist()` from fordogs:
+```{r}
+library(tidyverse)
+fdist <- function(x, sort = FALSE, width = 20) {
+  df <- forcats::fct_count(x, sort = sort)
+  length <- round(df$n / max(df$n) * width)
 
-Why does `str_locate()` return a matrix and not two vectors?
-
-Why does `str_locate()` return a matrix and not a data frame? 
-
-Why can `str_locate()` return a matrix while `str_locale_all()` has to return a list? 
+  lines <- paste0(format(df$f), " ", strrep("*", length), "\n")
+  cat(lines, sep = "")
+}
+ggplot2::diamonds$cut %>% 
+  fdist()
+```
 
 ```{r}
-library(stringr)
-x <- c(NA, "", "x", "y", "yy")
-str_locate(x, "y")
-str_locate_all(x, "y")
+fdist <- function(x, sort = FALSE, width = 20) {
+  df <- forcats::fct_count(x, sort = sort)
+  length <- round(df$n / max(df$n) * width)
+
+  lines <- paste0(format(df$f), " ", strrep("*", length), "\n")
+  cat(lines, sep = "")
+  cat("\n")
+  invisible(x)
+}
+ggplot2::diamonds$cut %>% 
+  fdist() %>% 
+  fct_lump(n = 3) %>% 
+  fdist()
 ```
----
-
-Same size: use a tibble, unless to work as input to other functions a matrix would be better.
-
-Different sizes: use a list, name the elements.  If you are returning that same thing from many functions, make an S3 class.
-
 
 ## Other Output Considerations
 
@@ -323,3 +353,12 @@ Beyond vector functions:
 
 * Output should feed easily into input
 
+## Recap
+
+* Your functions will be easier to reason about if 
+they are type-stable and size-stable
+
+* If you are returning multiple outputs, 
+choose a type that explicitly encodes important properties of the output.
+
+* Don't mix side effects with computation
