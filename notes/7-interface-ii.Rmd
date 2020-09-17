@@ -164,10 +164,13 @@ ifelse(TRUE, Sys.Date(), Sys.Date() + 1)
 
 **Breakout Room**:
 
-Test your predictions with `vec_ptype_show()`
+Test your predictions with `vec_ptype_show()`, `library(vctrs)`
 
 Discuss: 
 * Is `ifelse()` type stable?
 * What is the rule for the output type of `ifelse()`? (Hint: `?ifelse()`)
 
+Asnwer in Slido, once you are done with both questions: 
+Is `ifelse()` type stable?
 
+(5mins)
