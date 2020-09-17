@@ -105,6 +105,54 @@ y <- Sys.Date()
 slido.com #80875 
 passcode: tidytools
 
+```{r}
+countdown::countdown_fullscreen(3)
+```
+
+```{r}
+s3_dispatch(print(x))
+s3_get_method(print.default)
+```
+
+```{r}
+s3_dispatch(print(y))
+class(y)
+s3_get_method(print.Date)
+```
+## Why would I make my own class?
+
+Some examples:
+
+* You are returning complicated objects from your functions.  You can write a `print()` method that looks nice. `str(mod)`, `mod`
+
+* You have a new vector data type that you want to put in data frames/tibbles.  
+
+* You have a function taht returns something like tibble, but you want a nicer/different/special display.
+
+## Let's make a new class!
+
+* base type: function
+* class: secret
+
+```{r}
+f <- function(x) x * 100
+f <- new_secret(f)
+f
+#> HIDDEN
+f(1)
+#> 100
+```
+
+What needs to happen inside `new_secret()` to make `f` an
+object of class `"secret"`?
+
+
+
+
+
+
+
+## What would I make my own generic?
 
 
 
